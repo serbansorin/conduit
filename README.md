@@ -587,14 +587,15 @@ See [`python/README.md`](python/README.md) for the full API.
 
 The admin panel is also available as a native macOS application. The desktop
 app runs the gateway in-process on a loopback port and opens a native window
-pointed at the admin panel, already signed in.
+pointed at the admin panel, already signed in. It generates its own admin
+credentials on first launch, so there is no password prompt.
 
 ```bash
 cd desktop
 wails build
 ```
 
-The binary lands in `desktop/build/bin/`. See
+The bundle lands in `desktop/build/bin/conduit.app`. See
 [`desktop/README.md`](desktop/README.md).
 
 ---

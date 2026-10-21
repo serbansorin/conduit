@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Conduit</string>
+	<key>CFBundleDisplayName</key>
+	<string>Conduit</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.serban.conduit</string>
+	<key>CFBundleVersion</key>
+	<string>2.0.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>2.0.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (c) 2026 Serban Sorin</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.15.0</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>CFBundleDocumentTypes</key>
+	<array/>
+	<key>CFBundleIconFile</key>
+	<string>icon.png</string>
+</dict>
+</plist>

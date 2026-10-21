@@ -1,0 +1,10 @@
+{
+  "name": "conduit-desktop",
+  "version": "2.0.0",
+  "description": "Loading screen for the Conduit desktop application. The admin panel itself is served by the gateway over HTTP.",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "dev": "node build.js --watch"
+  }
+}

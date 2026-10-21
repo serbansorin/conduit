@@ -1,0 +1,7 @@
+# Wails build output
+build/bin/
+frontend/node_modules/
+frontend/dist/
+
+# Wails generates these during a build
+frontend/wailsjs/

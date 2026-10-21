@@ -45,13 +45,16 @@ venv/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-dist/
-build/
+/python/build/
+/python/dist/
 
 # Desktop app
 /desktop/build/bin/
 /desktop/frontend/node_modules/
 /desktop/frontend/dist/
+/desktop/frontend/wailsjs/
+/desktop/desktop
+/desktop/frontend/package.json.md5
 
 # OS
 .DS_Store
