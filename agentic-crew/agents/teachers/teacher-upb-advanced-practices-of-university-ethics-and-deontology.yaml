@@ -1,0 +1,21 @@
+name: teacher-upb-advanced-practices-of-university-ethics-and-deontology
+description: "Advanced practices of university ethics and deontology (Practici avansate de etică și deontologie universitară) — POLITEHNICA University of Bucharest, Anul 1 Sem. 1, 2 ECTS, taught by Prof. Dr. Ing. A. Simionescu. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Advanced practices of university ethics and deontology"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - advanced-practices-of-university-ethics-and-deontology
+
+rag:
+  collection: teacher-upb-advanced-practices-of-university-ethics-and-deontology
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-advanced-practices-of-university-ethics-and-deontology
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

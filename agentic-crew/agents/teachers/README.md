@@ -5,14 +5,25 @@ course's material — slides, lecture notes, problem sets.
 
 ## Adding a course
 
-1. Copy `_template.yaml` and rename it to `<course-code>.yaml`.
-2. Fill in `name`, `description` and `role`.
-3. Point `rag.sources[0].path` at the folder with the course material.
-4. Run:
+The EPiC courses are generated, not written by hand:
 
-   ```bash
-   agentic-crew ingest --agent teacher-<course-code>
-   ```
+```bash
+# The UPB plan, from the faculty's AQ portal.
+python3 tools/extract_upb_plan.py
+
+# The Erasmus partner tracks, from the programme handbook.
+python3 tools/extract_epic_curriculum.py ~/university/epic/_programme/E-PiCo+-Handbook.pdf
+```
+
+For a course of your own, copy `_template.yaml`, fill in `name`,
+`description` and `role`, point `rag.sources[0].path` at the material folder
+and run:
+
+```bash
+agentic-crew ingest --agent teacher-<course-code>
+```
+
+See `CURRICULUM.md` for the programme reference.
 
 ## A note on the material
 

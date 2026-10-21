@@ -1,0 +1,21 @@
+name: teacher-upb-proiectarea-si-managementul-programelor-educationale
+description: "Proiectarea și managementul programelor educaționale (Proiectarea și managementul programelor educaționale) — POLITEHNICA University of Bucharest, Anul 1 Sem. 1, 5 ECTS. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Proiectarea și managementul programelor educaționale"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - proiectarea-si-managementul-programelor-educationale
+
+rag:
+  collection: teacher-upb-proiectarea-si-managementul-programelor-educationale
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-proiectarea-si-managementul-programelor-educationale
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

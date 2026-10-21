@@ -1,0 +1,21 @@
+name: teacher-upb-renewable-energy-and-storage-systems
+description: "Renewable Energy and Storage Systems (Energie regenerabilă și sisteme de stocare) — POLITEHNICA University of Bucharest, Anul 1 Sem. 2, 3 ECTS, taught by Prof.dr.ing. Adriana FLORESCU. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Renewable Energy and Storage Systems"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - renewable-energy-and-storage-systems
+
+rag:
+  collection: teacher-upb-renewable-energy-and-storage-systems
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-renewable-energy-and-storage-systems
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

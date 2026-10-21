@@ -49,7 +49,7 @@ TABLE_MAP: List[Tuple[int, str, int]] = [
 ]
 
 TEACHER_TEMPLATE = """name: teacher-{slug}
-description: "{description}"
+description: {description}
 role: {role}
 model: {model}
 temperature: 0.3
@@ -69,6 +69,21 @@ rag:
     - path: {material}
       extensions: [".pdf", ".md", ".txt", ".pptx"]
 """
+
+
+def quote(text: str) -> str:
+    """Render a string as a double-quoted YAML scalar.
+
+    Course names contain colons, so every interpolated string is quoted.
+
+    Args:
+        text: The value.
+
+    Returns:
+        The quoted scalar.
+    """
+    escaped = text.replace("\\", "\\\\").replace('"', '\\"')
+    return f'"{escaped}"'
 
 
 def slugify(text: str) -> str:
@@ -341,8 +356,8 @@ def main(argv: Optional[List[str]] = None) -> int:
         )
         body = TEACHER_TEMPLATE.format(
             slug=key,
-            description=description,
-            role=f"Lecturer in {course['title']} ({course['institution']})",
+            description=quote(description),
+            role=quote(f"Lecturer in {course['title']} ({course['institution']})"),
             model=args.model,
             material=f"{args.material.rstrip('/')}/{key}",
         )

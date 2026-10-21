@@ -1,0 +1,21 @@
+name: teacher-upb-educatie-interculturala
+description: "Educație interculturală (Educație interculturală) — POLITEHNICA University of Bucharest, Anul 2 Sem. 1, 5 ECTS. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Educație interculturală"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - educatie-interculturala
+
+rag:
+  collection: teacher-upb-educatie-interculturala
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-educatie-interculturala
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

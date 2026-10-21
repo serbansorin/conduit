@@ -1,0 +1,21 @@
+name: teacher-upb-energy-storage-requirements
+description: "Energy Storage Requirements (Cerințe specifice stocării energiei) — POLITEHNICA University of Bucharest, Anul 2 Sem. 1, 4 ECTS, taught by Conf. dr. ing. Lucian-Andrei Perișoară, Prof. dr. ing. Alexandru Vasile. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Energy Storage Requirements"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - energy-storage-requirements
+
+rag:
+  collection: teacher-upb-energy-storage-requirements
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-energy-storage-requirements
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

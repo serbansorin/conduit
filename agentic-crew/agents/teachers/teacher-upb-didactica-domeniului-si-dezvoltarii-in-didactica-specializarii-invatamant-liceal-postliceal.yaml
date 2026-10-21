@@ -1,0 +1,21 @@
+name: teacher-upb-didactica-domeniului-si-dezvoltarii-in-didactica-specializarii-invatamant-liceal-postliceal
+description: "Didactica domeniului și dezvoltării în didactica specializării (învățământ liceal, postliceal) (Didactica domeniului și dezvoltării în didactica specializării (învățământ liceal, postliceal)) — POLITEHNICA University of Bucharest, Anul 2 Sem. 1, 5 ECTS. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Didactica domeniului și dezvoltării în didactica specializării (învățământ liceal, postliceal)"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - didactica-domeniului-si-dezvoltarii-in-didactica-specializarii-invatamant-liceal-postliceal
+
+rag:
+  collection: teacher-upb-didactica-domeniului-si-dezvoltarii-in-didactica-specializarii-invatamant-liceal-postliceal
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-didactica-domeniului-si-dezvoltarii-in-didactica-specializarii-invatamant-liceal-postliceal
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

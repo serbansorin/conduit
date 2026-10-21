@@ -1,0 +1,21 @@
+name: teacher-upb-microprocessor-applications-for-real-time-systems
+description: "Microprocessor Applications for Real Time Systems (Aplicații ale microprocesoarelor pentru sisteme de calcul în timp real) — POLITEHNICA University of Bucharest, Anul 2 Sem. 1, 4 ECTS, taught by ș.l. dr. ing. Georgian Nicolae (2025-26), Prof. Dr. Ing. Corneliu Burileanu (2024-25). Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Microprocessor Applications for Real Time Systems"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - microprocessor-applications-for-real-time-systems
+
+rag:
+  collection: teacher-upb-microprocessor-applications-for-real-time-systems
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-microprocessor-applications-for-real-time-systems
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

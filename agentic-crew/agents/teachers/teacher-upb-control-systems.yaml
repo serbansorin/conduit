@@ -1,0 +1,21 @@
+name: teacher-upb-control-systems
+description: "Control Systems (Sisteme de control automat) — POLITEHNICA University of Bucharest, Anul 1 Sem. 1, 3 ECTS, taught by Prof. Dr. Ing. Dan Alexandru Stoichescu. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Control Systems"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - control-systems
+
+rag:
+  collection: teacher-upb-control-systems
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-control-systems
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

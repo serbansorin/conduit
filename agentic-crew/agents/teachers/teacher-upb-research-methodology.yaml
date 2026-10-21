@@ -1,0 +1,21 @@
+name: teacher-upb-research-methodology
+description: "Research Methodology (Metodologia cercetării) — POLITEHNICA University of Bucharest, Anul 1 Sem. 1, 3 ECTS, taught by Prof. Dr. Ing. Răzvan Crăciunescu. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Research Methodology"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - research-methodology
+
+rag:
+  collection: teacher-upb-research-methodology
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-research-methodology
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

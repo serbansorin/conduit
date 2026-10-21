@@ -1,0 +1,21 @@
+name: teacher-upb-romanian-language-and-culture
+description: "Romanian Language and Culture (Limba și cultura română) — POLITEHNICA University of Bucharest, Anul 1 Sem. 2, 3 ECTS, taught by Mihaela Pricope. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Romanian Language and Culture"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - romanian-language-and-culture
+
+rag:
+  collection: teacher-upb-romanian-language-and-culture
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-romanian-language-and-culture
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

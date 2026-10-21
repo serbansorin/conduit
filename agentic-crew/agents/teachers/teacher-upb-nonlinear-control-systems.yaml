@@ -1,0 +1,21 @@
+name: teacher-upb-nonlinear-control-systems
+description: "Nonlinear Control Systems (Sisteme neliniare de control automat) — POLITEHNICA University of Bucharest, Anul 1 Sem. 2, 3 ECTS, taught by Conf. Dr. Ing. Cătălin Lupu (2024-25), Prof. Dr. Ing. Alexandru Dinu (2025-26). Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Nonlinear Control Systems"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - nonlinear-control-systems
+
+rag:
+  collection: teacher-upb-nonlinear-control-systems
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-nonlinear-control-systems
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

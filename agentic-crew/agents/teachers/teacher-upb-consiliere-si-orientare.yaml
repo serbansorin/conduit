@@ -1,0 +1,21 @@
+name: teacher-upb-consiliere-si-orientare
+description: "Consiliere și orientare (Consiliere și orientare) — POLITEHNICA University of Bucharest, Anul 1 Sem. 2, 5 ECTS. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Consiliere și orientare"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - consiliere-si-orientare
+
+rag:
+  collection: teacher-upb-consiliere-si-orientare
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-consiliere-si-orientare
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

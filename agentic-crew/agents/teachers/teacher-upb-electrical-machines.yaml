@@ -1,0 +1,21 @@
+name: teacher-upb-electrical-machines
+description: "Electrical Machines (Mașini electrice) — POLITEHNICA University of Bucharest, Anul 1 Sem. 2, 4 ECTS, taught by Prof. Dr. Ing. Tiberiu Tudorache (2024-25), Conf. Dr. Ing. A. Șerban (2025-26). Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Electrical Machines"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - electrical-machines
+
+rag:
+  collection: teacher-upb-electrical-machines
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-electrical-machines
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

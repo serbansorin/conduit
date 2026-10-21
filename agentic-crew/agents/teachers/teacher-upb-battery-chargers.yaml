@@ -1,0 +1,21 @@
+name: teacher-upb-battery-chargers
+description: "Battery Chargers (Încărcătoare de baterii) — POLITEHNICA University of Bucharest, Anul 2 Sem. 1, 4 ECTS, taught by Conf. dr. ing. Ștefan-George Roșu. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Battery Chargers"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - battery-chargers
+
+rag:
+  collection: teacher-upb-battery-chargers
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-battery-chargers
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

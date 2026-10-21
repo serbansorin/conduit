@@ -1,0 +1,21 @@
+name: teacher-upb-module-of-scientific-research-research-practice-and-thesis-development
+description: "Module of scientific research, research practice, and thesis development (Modul de cercetare științifică, practică de cercetare și elaborare de disertație) — POLITEHNICA University of Bucharest, Anul 2 Sem. 2, 30 ECTS, taught by Conf. Dr. Ing. Octaviana Datcu. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Module of scientific research, research practice, and thesis development"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - module-of-scientific-research-research-practice-and-thesis-development
+
+rag:
+  collection: teacher-upb-module-of-scientific-research-research-practice-and-thesis-development
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-module-of-scientific-research-research-practice-and-thesis-development
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

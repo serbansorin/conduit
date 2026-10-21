@@ -1,0 +1,21 @@
+name: teacher-upb-module-of-scientific-research-ii
+description: "Module of scientific research II (Modul de cercetare științifică II) — POLITEHNICA University of Bucharest, Anul 1 Sem. 2, 10 ECTS, taught by Conf. Dr. Ing. Octaviana Datcu. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Module of scientific research II"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - module-of-scientific-research-ii
+
+rag:
+  collection: teacher-upb-module-of-scientific-research-ii
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-module-of-scientific-research-ii
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

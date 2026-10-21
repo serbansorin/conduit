@@ -1,0 +1,21 @@
+name: teacher-upb-project-embedded-systems
+description: "Project: Embedded Systems (Proiect: sisteme embedded) — POLITEHNICA University of Bucharest, Anul 1 Sem. 1, 2 ECTS, taught by Prof. Dr. Ing. Alexandru Ancuța. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Project: Embedded Systems"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - project-embedded-systems
+
+rag:
+  collection: teacher-upb-project-embedded-systems
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-project-embedded-systems
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

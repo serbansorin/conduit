@@ -1,0 +1,21 @@
+name: teacher-upb-practica-pedagogica-de-specialitate-in-invatamantul-preuniversitar-invatamant-liceal-postliceal
+description: "Practică pedagogică de specialitate în învățământul preuniversitar (învățământ liceal, postliceal) (Practică pedagogică de specialitate în învățământul preuniversitar (învățământ liceal, postliceal)) — POLITEHNICA University of Bucharest, Anul 2 Sem. 2, 5 ECTS. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Practică pedagogică de specialitate în învățământul preuniversitar (învățământ liceal, postliceal)"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - practica-pedagogica-de-specialitate-in-invatamantul-preuniversitar-invatamant-liceal-postliceal
+
+rag:
+  collection: teacher-upb-practica-pedagogica-de-specialitate-in-invatamantul-preuniversitar-invatamant-liceal-postliceal
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-practica-pedagogica-de-specialitate-in-invatamantul-preuniversitar-invatamant-liceal-postliceal
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

@@ -1,0 +1,21 @@
+name: teacher-upb-electric-vehicle-modelling-and-simulation
+description: "Electric Vehicle Modelling and Simulation (Modelarea și simularea vehiculelor electrice) — POLITEHNICA University of Bucharest, Anul 1 Sem. 1, 3 ECTS, taught by Conf. Dr. Ing. Octaviana Datcu (2024-25), Prof. Dr. Ing. Alexandru Ancuța (2025-26). Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Electric Vehicle Modelling and Simulation"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - electric-vehicle-modelling-and-simulation
+
+rag:
+  collection: teacher-upb-electric-vehicle-modelling-and-simulation
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-electric-vehicle-modelling-and-simulation
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

@@ -1,0 +1,21 @@
+name: teacher-upb-psihopedagogia-adolescentilor-tinerilor-si-adultilor
+description: "Psihopedagogia adolescenților, tinerilor și adulților (Psihopedagogia adolescenților, tinerilor și adulților) — POLITEHNICA University of Bucharest, Anul 1 Sem. 2, 5 ECTS. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Psihopedagogia adolescenților, tinerilor și adulților"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - psihopedagogia-adolescentilor-tinerilor-si-adultilor
+
+rag:
+  collection: teacher-upb-psihopedagogia-adolescentilor-tinerilor-si-adultilor
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-psihopedagogia-adolescentilor-tinerilor-si-adultilor
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

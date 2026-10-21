@@ -1,0 +1,21 @@
+name: teacher-upb-sensorless-control-of-electrical-machines
+description: "Sensorless Control of Electrical Machines (Controlul fără senzori al mașinilor electrice) — POLITEHNICA University of Bucharest, Anul 2 Sem. 1, 4 ECTS, taught by Ș.l. dr. ing. Mihai Stanciu. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Sensorless Control of Electrical Machines"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - sensorless-control-of-electrical-machines
+
+rag:
+  collection: teacher-upb-sensorless-control-of-electrical-machines
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-sensorless-control-of-electrical-machines
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

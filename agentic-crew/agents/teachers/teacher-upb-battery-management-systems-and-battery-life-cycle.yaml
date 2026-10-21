@@ -1,0 +1,21 @@
+name: teacher-upb-battery-management-systems-and-battery-life-cycle
+description: "Battery Management Systems and Battery Life Cycle (Sisteme de management al bateriilor și ciclul de viață al bateriilor) — POLITEHNICA University of Bucharest, Anul 2 Sem. 1, 4 ECTS, taught by Conf. dr. ing. Lucian-Andrei Perișoară, Prof. dr. ing. Alexandru Vasile. Use for anything about this course, its theory, its exercises or its exam material."
+role: "Lecturer in Battery Management Systems and Battery Life Cycle"
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - upb
+  - battery-management-systems-and-battery-life-cycle
+
+rag:
+  collection: teacher-upb-battery-management-systems-and-battery-life-cycle
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/upb-battery-management-systems-and-battery-life-cycle
+      extensions: [".pdf", ".md", ".txt", ".pptx"]
