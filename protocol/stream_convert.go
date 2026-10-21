@@ -691,17 +691,17 @@ type toolBlockState struct {
 }
 
 type messagesEmitter struct {
-	enc            *MessagesStreamEncoder
-	flush          func()
-	started        bool
-	id             string
-	model          string
-	currentType    string // "text" | "thinking" | "" (only non-tool blocks)
-	blockIdx       int    // index of the currently-open NON-tool block
-	toolBlocks     map[int]*toolBlockState
-	nextBlockIdx   int // monotonically increasing content block index
-	finished       bool
-	usage          *IRUsage
+	enc          *MessagesStreamEncoder
+	flush        func()
+	started      bool
+	id           string
+	model        string
+	currentType  string // "text" | "thinking" | "" (only non-tool blocks)
+	blockIdx     int    // index of the currently-open NON-tool block
+	toolBlocks   map[int]*toolBlockState
+	nextBlockIdx int // monotonically increasing content block index
+	finished     bool
+	usage        *IRUsage
 }
 
 func (e *messagesEmitter) onStart(id, model string) error {

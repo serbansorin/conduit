@@ -280,11 +280,14 @@ func EncodeResponsesResponse(ir *IRResponse) ([]byte, error) {
 //
 // P0-2: unknown/empty event types and {"error":...} payloads are rejected.
 // P1-2: IRToolCall.Index is populated from output_index for function_call
-//   start/delta/done events.
+//
+//	start/delta/done events.
+//
 // P1-3: response.function_call_arguments.done is a finalization event — its
-//   arguments are NOT emitted as a delta (accumulated deltas already carry the
-//   full arguments). The done event only updates the cached id/name so the
-//   target emitter can finalize the item.
+//
+//	arguments are NOT emitted as a delta (accumulated deltas already carry the
+//	full arguments). The done event only updates the cached id/name so the
+//	target emitter can finalize the item.
 func DecodeResponsesStreamEvent(data []byte) (*IRStreamEvent, error) {
 	// P0-2: detect upstream error payloads first.
 	if msg := streamErrorPayload(data); msg != "" {

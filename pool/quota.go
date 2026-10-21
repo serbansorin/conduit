@@ -10,9 +10,9 @@ import (
 
 // QuotaCheckResult holds the outcome of checking one key's quota.
 type QuotaCheckResult struct {
-	KeyID   uint
+	KeyID    uint
 	KeyValue string // masked by caller if needed
-	Group   string
+	Group    string
 	// Expired is true when the key's credential (cookie/API key) is no longer
 	// valid — the key should be disabled so the pool stops routing to it.
 	Expired bool

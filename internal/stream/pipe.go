@@ -26,10 +26,10 @@ import (
 
 // Result holds the outcome of a Pipe relay.
 type Result struct {
-	Bytes        []byte // raw bytes that were relayed
-	Err          error  // first error encountered (read or write)
-	FirstByteMs  int64  // milliseconds from start to first data line (0 if never)
-	Lines        int    // number of lines relayed
+	Bytes       []byte // raw bytes that were relayed
+	Err         error  // first error encountered (read or write)
+	FirstByteMs int64  // milliseconds from start to first data line (0 if never)
+	Lines       int    // number of lines relayed
 }
 
 // LineHook is an optional callback invoked for each relaid line. It receives

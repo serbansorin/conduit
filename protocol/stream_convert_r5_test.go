@@ -233,6 +233,7 @@ func TestR5_P1_2_ChatToMessagesUsageFields(t *testing.T) {
 		t.Errorf("P1-2 FAIL: Messages output_tokens=%d, want 20", foundOutput)
 	}
 }
+
 // ---------------------------------------------------------------------------
 // Round-6 audit verification tests.
 // ---------------------------------------------------------------------------

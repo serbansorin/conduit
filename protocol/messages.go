@@ -197,8 +197,8 @@ func DecodeMessagesResponse(data []byte) (*IRResponse, error) {
 	}
 	if resp.Usage != nil {
 		ir.Usage = &IRUsage{
-			PromptTokens:        resp.Usage.InputTokens,
-			CompletionTokens:    resp.Usage.OutputTokens,
+			PromptTokens:     resp.Usage.InputTokens,
+			CompletionTokens: resp.Usage.OutputTokens,
 			// P1-2: do NOT pre-compute TotalTokens here — input and output
 			// tokens arrive in separate events (message_start vs
 			// message_delta). mergeUsage will recalculate TotalTokens from
@@ -284,8 +284,8 @@ func DecodeMessagesStreamEvent(data []byte) (*IRStreamEvent, error) {
 			ir.Response = &IRResponse{ID: ev.Message.ID, Model: ev.Message.Model}
 			if ev.Message.Usage != nil {
 				ir.Response.Usage = &IRUsage{
-					PromptTokens:        ev.Message.Usage.InputTokens,
-					CompletionTokens:    ev.Message.Usage.OutputTokens,
+					PromptTokens:     ev.Message.Usage.InputTokens,
+					CompletionTokens: ev.Message.Usage.OutputTokens,
 					// P1-2: do NOT pre-compute TotalTokens — output_tokens
 					// arrives later in message_delta. mergeUsage recalculates
 					// TotalTokens from the accumulated parts when it is zero.

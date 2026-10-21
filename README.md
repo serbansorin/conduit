@@ -49,6 +49,14 @@ copyright notices are retained in [LICENSE](LICENSE) and in the git history.
 The upstream service Conduit proxies to, **OpenCode Go**, is a separate
 project by OpenCode — Conduit is not affiliated with or endorsed by it.
 
+### Sponsor
+
+[![PackyCode](packycode-en.png)](https://www.packyapi.com/register?aff=cliproxyapi)
+
+[PackyCode](https://www.packyapi.com/register?aff=cliproxyapi) sponsors the
+original opencode-go project and this derivative inherits that sponsorship
+credit. PackyCode is an API relay service for Claude Code, Codex and Gemini.
+
 ---
 
 ## Table of contents
