@@ -240,7 +240,7 @@ export function useUsage(api, showToast, t) {
   }
 
   function billingMode(row) {
-    return (row?.billing_mode || 'token') === 'token' ? '按 Token' : row?.billing_mode;
+    return (row?.billing_mode || 'token') === 'token' ? 'Per token' : row?.billing_mode;
   }
 
   function errorDetail(row) {

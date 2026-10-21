@@ -289,7 +289,7 @@ export function useKeys(api, showToast, t, showConfirm) {
 
     const key = keys.value.find((item) => item.id === id);
     if (!key) {
-      showToast("未找到对应密钥", "error");
+      showToast(t("errors.keyNotFound"), "error");
       return;
     }
 
@@ -309,7 +309,7 @@ export function useKeys(api, showToast, t, showConfirm) {
       );
       key.workspace_id = workspaceID;
       quotaData.value[id] = null;
-      showToast("Workspace ID 已保存，正在重新查询");
+      showToast(t("keys.workspaceSaved"));
       await fetchQuota(id);
       load();
     } catch (e) {
@@ -445,24 +445,11 @@ export function useKeys(api, showToast, t, showConfirm) {
 
   function localizeOllamaReset(value) {
     const text = String(value || "").trim();
-    if (!text || localeIsEnglish()) return text;
-    const units = {
-      second: "秒",
-      seconds: "秒",
-      minute: "分钟",
-      minutes: "分钟",
-      hour: "小时",
-      hours: "小时",
-      day: "天",
-      days: "天",
-      week: "周",
-      weeks: "周",
-    };
-    return text.replace(/\b(\d+(?:\.\d+)?)\s*(seconds?|minutes?|hours?|days?|weeks?)\b/gi, (_, amount, unit) => `${amount} ${units[unit.toLowerCase()] || unit}`);
-  }
-
-  function localeIsEnglish() {
-    return document.documentElement.lang === "en" || localStorage.getItem("admin_locale") === "en";
+    if (!text) return text;
+    return text.replace(/\b(\d+(?:\.\d+)?)\s*(seconds?|minutes?|hours?|days?|weeks?)\b/gi, (_, amount, unit) => {
+      const localized = t("keys.quotaUnits." + unit.toLowerCase());
+      return localized === "keys.quotaUnits." + unit.toLowerCase() ? `${amount} ${unit}` : `${amount} ${localized}`;
+    });
   }
 
   function formatQuotaNumber(value) {

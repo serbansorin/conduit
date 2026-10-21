@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -78,40 +78,6 @@
           >
             <span v-html="icons.github"></span>
           </a>
-          <!-- Language Dropdown -->
-          <div class="dropdown-wrap">
-            <button class="locale-btn" @click="dropLang=!dropLang">
-              <span
-                v-html="icons.globe"
-                style="
-                  width: 14px;
-                  height: 14px;
-                  display: inline-block;
-                  vertical-align: middle;
-                  margin-right: 3px;
-                "
-              ></span>
-              {{locale==='zh'?'CN':'EN'}}
-            </button>
-            <div v-if="dropLang" class="dropdown-menu" style="min-width: 110px">
-              <button
-                class="drop-item"
-                :class="{active:locale==='zh'}"
-                @click="locale='zh';dropLang=false"
-              >
-                <span v-html="icons.globe"></span>
-                中文
-              </button>
-              <button
-                class="drop-item"
-                :class="{active:locale==='en'}"
-                @click="locale='en';dropLang=false"
-              >
-                <span v-html="icons.globe"></span>
-                English
-              </button>
-            </div>
-          </div>
           <!-- Theme Dropdown -->
           <div class="dropdown-wrap">
             <button
@@ -1761,27 +1727,27 @@
             </div>
           </div>
           <div v-if="currentGroup==='go'" style="border-top:1px solid var(--border);margin:8px 0">
-            <h3 style="margin:8px 0;font-size:14px">Go 订阅限额查询（可选）</h3>
+            <h3 style="margin:8px 0;font-size:14px">Go subscription quota lookup (optional)</h3>
             <div class="form-row">
               <div class="form-group">
                 <label>Cookie</label>
                 <input
                   v-model="newKey.cookie"
                   @blur="normalizeKeyCookie"
-                  placeholder="可粘贴 Cookie: auth=... / auth=... / Fe26..."
+                  placeholder="Paste a Cookie: auth=... / auth=... / Fe26..."
                 />
-                <small class="hint-text">自动识别并保存为 auth=&lt;token&gt;，可直接粘贴浏览器 Cookie 请求头。</small>
+                <small class="hint-text">Recognised and stored as auth=&lt;token&gt;. You can paste the Cookie request header straight from your browser.</small>
               </div>
             </div>
             <div class="form-row">
               <div class="form-group">
-                <label>Workspace ID（可选）</label>
+                <label>Workspace ID (optional)</label>
                 <input
                   v-model="newKey.workspace_id"
                   @blur="normalizeKeyWorkspace"
-                  placeholder="wrk_... 或 https://opencode.ai/workspace/wrk_.../go"
+                  placeholder="wrk_... or https://opencode.ai/workspace/wrk_.../go"
                 />
-                <small class="hint-text">可直接粘贴工作区页面 URL；留空时使用 Cookie 自动获取。</small>
+                <small class="hint-text">Paste the workspace page URL. Leave empty to look it up from the Cookie automatically.</small>
               </div>
             </div>
           </div>

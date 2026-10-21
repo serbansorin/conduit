@@ -34,9 +34,10 @@ createApp({
     const loginError = ref("");
     const logging = ref(false);
     const page = ref("dashboard");
-    const locale = ref(localStorage.getItem("admin_locale") || "zh");
+    // The panel ships in English. The locale catalogue still carries every
+    // translation, so switching this back to a stored value re-enables them.
+    const locale = ref("en");
     const theme = ref(localStorage.getItem("admin_theme") || "dark");
-    const dropLang = ref(false);
     const dropTheme = ref(false);
     const channelOpen = ref(false);
     const channels = reactive([
@@ -316,7 +317,6 @@ createApp({
       page,
       locale,
       theme,
-      dropLang,
       dropTheme,
       channelOpen,
       channels,
