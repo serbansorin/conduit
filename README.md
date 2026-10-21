@@ -503,6 +503,10 @@ Its two third-party libraries, Vue and Chart.js, are vendored under
 requests**: it works offline, behind an air gap, and without inheriting
 someone else's CDN as a supply-chain dependency.
 
+The visual system follows Apple's own: the iOS system palette, hairline
+separators, translucency on the top bar and sidebar, and motion kept to a
+few hundred milliseconds. It is a quiet application, not a light show.
+
 ---
 
 ## Admin REST API
