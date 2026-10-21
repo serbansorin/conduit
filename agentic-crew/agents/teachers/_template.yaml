@@ -1,0 +1,21 @@
+name: teacher-course-code
+description: "REPLACE: one line saying when to pick this teacher. The router reads this."
+role: University lecturer
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - REPLACE-course-code
+
+# Point this at the folder holding the course material. Any PDF, Markdown or
+# text file in it becomes part of the teacher's knowledge base.
+rag:
+  collection: teacher-course-code
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/evpc/REPLACE-course-code
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

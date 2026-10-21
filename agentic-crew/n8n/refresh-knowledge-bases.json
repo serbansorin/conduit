@@ -1,0 +1,65 @@
+{
+  "name": "Conduit — refresh the crew knowledge bases",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "b2000000-0000-4000-8000-000000000001",
+      "name": "Every 6 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-260, 0]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.CONDUIT_CREW_URL || 'http://127.0.0.1:8787' }}/agents",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.AGENTIC_CREW_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2000000-0000-4000-8000-000000000002",
+      "name": "List the agents",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ingest every agent that has a knowledge base.\n// The ingest is idempotent, so running it on a schedule is cheap.\nconst base = $env.CONDUIT_CREW_URL || 'http://127.0.0.1:8787';\nconst key = $env.AGENTIC_CREW_API_KEY;\n\nconst agents = $input.first().json;\nconst results = [];\n\nfor (const agent of agents) {\n  if (!agent.name) continue;\n  try {\n    const response = await this.helpers.httpRequest({\n      method: 'POST',\n      url: `${base}/agents/${encodeURIComponent(agent.name)}/ingest`,\n      headers: { 'Content-Type': 'application/json', ...(key ? { Authorization: `Bearer ${key}` } : {}) },\n      body: { force: false },\n      json: true,\n    });\n    results.push({ agent: agent.name, ok: true, chunks: response.chunks, errors: response.errors });\n  } catch (error) {\n    results.push({ agent: agent.name, ok: false, error: error.message });\n  }\n}\n\nreturn results.map((item) => ({ json: item }));"
+      },
+      "id": "b2000000-0000-4000-8000-000000000003",
+      "name": "Ingest each knowledge base",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0]
+    }
+  ],
+  "connections": {
+    "Every 6 hours": {
+      "main": [[{ "node": "List the agents", "type": "main", "index": 0 }]]
+    },
+    "List the agents": {
+      "main": [[{ "node": "Ingest each knowledge base", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "pinData": {},
+  "meta": { "instanceId": "conduit-agentic-crew" },
+  "tags": []
+}
