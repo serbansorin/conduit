@@ -1,0 +1,436 @@
+package pool
+
+import (
+	"encoding/json"
+	"errors"
+	"log"
+	"math"
+	"net/http"
+	"regexp"
+	"strings"
+	"sync"
+	"time"
+
+	"github.com/serbansorin/conduit/store"
+	"gorm.io/gorm"
+)
+
+// ErrNoAvailableKey means no enabled, non-cooled-down key exists for the group.
+var ErrNoAvailableKey = errors.New("no available key for group")
+
+// Picker is the concurrency-safe KEY pool with weighted round-robin scheduling,
+// exponential-backoff failure cooldown, and usage bookkeeping.
+type Picker struct {
+	mu       sync.Mutex
+	cursor   map[string]int64 // group -> virtual cursor (weighted round-robin)
+	coolConf cooldownConfig
+}
+
+type cooldownConfig struct {
+	threshold    int           // fail count to trigger first cooldown
+	baseDuration time.Duration // initial cooldown length
+	maxDuration  time.Duration // upper bound for exponential backoff
+}
+
+// NewPicker creates a Picker with exponential backoff cooldown:
+//
+//	fail >= threshold  →  baseDuration
+//	each subsequent fail doubles the cooldown, capped at maxDuration.
+func NewPicker() *Picker {
+	return &Picker{
+		cursor: map[string]int64{},
+		coolConf: cooldownConfig{
+			threshold:    3,
+			baseDuration: 30 * time.Second,
+			maxDuration:  10 * time.Minute,
+		},
+	}
+}
+
+// Pick selects the next available key for a group using weighted round-robin,
+// skipping disabled keys and those in cooldown. Keys with higher Weight get
+// proportionally more traffic. The returned key's LastUsed/UsageCount are
+// updated. Returns ErrNoAvailableKey if none usable.
+func (p *Picker) Pick(group string) (*store.Key, error) {
+	keys, err := p.PickAttempts(group)
+	if err != nil {
+		return nil, err
+	}
+	chosen := &keys[0]
+	p.MarkUsed(chosen.ID)
+	chosen.UsageCount++
+	now := time.Now()
+	chosen.LastUsed = &now
+	return chosen, nil
+}
+
+// PickAttempts returns all currently available keys for a group. The first key
+// follows the weighted round-robin scheduler, and the remaining keys are
+// returned once each as fallback candidates for the same request.
+func (p *Picker) PickAttempts(group string) ([]store.Key, error) {
+	if group == "" {
+		group = "go"
+	}
+
+	var keys []store.Key
+	if err := store.DB().Where("enabled = ? AND `group` = ?", true, group).Order("id asc").Find(&keys).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNoAvailableKey
+		}
+		return nil, err
+	}
+	if len(keys) == 0 {
+		return nil, ErrNoAvailableKey
+	}
+
+	now := time.Now()
+
+	// Calculate total effective weight (only keys not in cooldown).
+	type candidate struct {
+		index  int
+		key    store.Key
+		weight int
+	}
+	var candidates []candidate
+	totalWeight := 0
+	for i, k := range keys {
+		if k.CooldownUntil != nil && k.CooldownUntil.After(now) {
+			continue
+		}
+		w := k.Weight
+		if w <= 0 {
+			w = 1
+		}
+		candidates = append(candidates, candidate{index: i, key: k, weight: w})
+		totalWeight += w
+	}
+
+	if len(candidates) == 0 {
+		return nil, ErrNoAvailableKey
+	}
+
+	// Weighted round-robin: advance virtual cursor and map to candidate.
+	p.mu.Lock()
+	cursor := p.cursor[group]
+	p.cursor[group] = cursor + 1
+	p.mu.Unlock()
+
+	// Map cursor to a candidate using weighted distribution.
+	// We cycle through totalWeight positions.
+	pos := cursor % int64(totalWeight)
+	if pos < 0 {
+		pos += int64(totalWeight)
+	}
+
+	chosenIndex := -1
+	accumulated := int64(0)
+	for i, c := range candidates {
+		accumulated += int64(c.weight)
+		if pos < accumulated {
+			chosenIndex = i
+			break
+		}
+	}
+	if chosenIndex < 0 {
+		// Fallback: pick first candidate.
+		chosenIndex = 0
+	}
+
+	attempts := make([]store.Key, 0, len(candidates))
+	for offset := 0; offset < len(candidates); offset++ {
+		c := candidates[(chosenIndex+offset)%len(candidates)]
+		attempts = append(attempts, c.key)
+	}
+	return attempts, nil
+}
+
+// MarkUsed updates usage bookkeeping for a key that is about to be attempted.
+func (p *Picker) MarkUsed(keyID uint) {
+	now := time.Now()
+	store.DB().Model(&store.Key{}).Where("id = ?", keyID).Updates(map[string]any{
+		"last_used":   now,
+		"usage_count": gorm.Expr("usage_count + ?", 1),
+	})
+}
+
+// PickAll returns every available (enabled + not cooled-down) key for a group.
+// Useful when you want to try multiple keys on failure.
+func (p *Picker) PickAll(group string) ([]store.Key, error) {
+	if group == "" {
+		group = "go"
+	}
+	var keys []store.Key
+	now := time.Now()
+	err := store.DB().
+		Where("enabled = ? AND `group` = ? AND (cooldown_until IS NULL OR cooldown_until <= ?)", true, group, now).
+		Find(&keys).Error
+	return keys, err
+}
+
+// MarkSuccess resets a key's fail counter and clears cooldown.
+func (p *Picker) MarkSuccess(keyID uint) {
+	store.DB().Model(&store.Key{}).Where("id = ?", keyID).Updates(map[string]any{
+		"fail_count":     0,
+		"cooldown_until": nil,
+	})
+}
+
+// MarkFailure increments the fail counter with exponential backoff:
+//
+//	cooldown = min(baseDuration * 2^(fails-threshold), maxDuration)
+func (p *Picker) MarkFailure(keyID uint) {
+	var k store.Key
+	if err := store.DB().First(&k, keyID).Error; err != nil {
+		return
+	}
+	newCount := k.FailCount + 1
+	updates := map[string]any{"fail_count": newCount}
+	if newCount >= p.coolConf.threshold {
+		exponent := float64(newCount - p.coolConf.threshold)
+		dur := time.Duration(float64(p.coolConf.baseDuration) * math.Pow(2, exponent))
+		if dur > p.coolConf.maxDuration {
+			dur = p.coolConf.maxDuration
+		}
+		until := time.Now().Add(dur)
+		updates["cooldown_until"] = until
+	}
+	store.DB().Model(&store.Key{}).Where("id = ?", k.ID).Updates(updates)
+}
+
+// MarkFailureWithQuota applies quota-aware cooldown for upstream 429 and the
+// regular authentication cooldown for 401. Other statuses only increment
+// failure history; they never set cooldown_until.
+func (p *Picker) MarkFailureWithQuota(keyID uint, statusCode int, errBody []byte, snapshot string) {
+	if statusCode == http.StatusUnauthorized {
+		p.MarkFailure(keyID)
+		return
+	}
+	if !isCooldownStatus(statusCode) {
+		// Keep the failure counter for diagnostics and selection statistics, but
+		// do not create a cooldown. Only 401 and 429 are key-specific signals;
+		// 5xx, conversion failures, and client-side errors can be unrelated to
+		// the selected credential.
+		p.markFailureCountOnly(keyID)
+		return
+	}
+
+	var k store.Key
+	if err := store.DB().First(&k, keyID).Error; err != nil {
+		return
+	}
+	if strings.TrimSpace(snapshot) == "" {
+		snapshot = k.QuotaSnapshot
+	}
+	bucket, resetInSec, ok := parse429QuotaBucket(errBody, snapshot)
+	if !ok || resetInSec <= 0 {
+		p.MarkFailure(keyID)
+		return
+	}
+
+	dur := time.Duration(resetInSec) * time.Second
+	if dur > 7*24*time.Hour {
+		log.Printf("warn: key %d quota cooldown from %s bucket is long: %s", keyID, bucket, dur)
+	}
+	until := time.Now().Add(dur)
+	store.DB().Model(&store.Key{}).Where("id = ?", k.ID).Updates(map[string]any{
+		"fail_count":     k.FailCount + 1,
+		"cooldown_until": until,
+	})
+}
+
+func isCooldownStatus(statusCode int) bool {
+	return statusCode == http.StatusUnauthorized || statusCode == http.StatusTooManyRequests
+}
+
+// markFailureCountOnly increments failure history without setting or extending
+// cooldown_until. It is used for failures that should remain visible in the
+// admin state while remaining eligible for subsequent requests.
+func (p *Picker) markFailureCountOnly(keyID uint) {
+	store.DB().Model(&store.Key{}).Where("id = ?", keyID).UpdateColumn("fail_count", gorm.Expr("fail_count + ?", 1))
+}
+
+type quotaSnapshotBucket struct {
+	UsagePercent int   `json:"usagePercent"`
+	ResetInSec   int64 `json:"resetInSec"`
+}
+
+type quotaSnapshotPayload struct {
+	Quota struct {
+		Rolling quotaSnapshotBucket `json:"rolling"`
+		Weekly  quotaSnapshotBucket `json:"weekly"`
+		Monthly quotaSnapshotBucket `json:"monthly"`
+	} `json:"quota"`
+}
+
+var quotaBucketPattern = regexp.MustCompile(`(?i)\b(rolling|weekly|monthly)\b`)
+
+func parse429QuotaBucket(body []byte, snapshot string) (string, int64, bool) {
+	payload, ok := decodeQuotaSnapshot(snapshot)
+	if !ok {
+		return "", 0, false
+	}
+
+	if hint := quotaBucketHint(body); hint != "" {
+		if hint == "monthly" || hint == "weekly" {
+			if bucket := quotaSnapshotBucketByName(payload, hint); bucket.UsagePercent >= 100 && bucket.ResetInSec > 0 {
+				return hint, bucket.ResetInSec, true
+			}
+			if payload.Quota.Rolling.ResetInSec > 0 {
+				return "rolling", payload.Quota.Rolling.ResetInSec, true
+			}
+			return "", 0, false
+		}
+		if hint == "rolling" && payload.Quota.Rolling.ResetInSec > 0 {
+			return "rolling", payload.Quota.Rolling.ResetInSec, true
+		}
+	}
+
+	if bucket, resetInSec, ok := exhaustedLongQuotaBucket(payload); ok {
+		return bucket, resetInSec, true
+	}
+	if payload.Quota.Rolling.ResetInSec > 0 {
+		return "rolling", payload.Quota.Rolling.ResetInSec, true
+	}
+	return "", 0, false
+}
+
+func decodeQuotaSnapshot(snapshot string) (quotaSnapshotPayload, bool) {
+	var payload quotaSnapshotPayload
+	if strings.TrimSpace(snapshot) == "" {
+		return payload, false
+	}
+	if err := json.Unmarshal([]byte(snapshot), &payload); err != nil {
+		return payload, false
+	}
+	return payload, true
+}
+
+func quotaBucketHint(body []byte) string {
+	body = []byte(strings.ToLower(string(body)))
+	if len(body) == 0 {
+		return ""
+	}
+	var payload any
+	if err := json.Unmarshal(body, &payload); err == nil {
+		if hint := quotaBucketHintFromPayload(payload); hint != "" {
+			return hint
+		}
+	}
+	match := quotaBucketPattern.FindSubmatch(body)
+	if len(match) == 2 {
+		return string(match[1])
+	}
+	return ""
+}
+
+func quotaBucketHintFromPayload(v any) string {
+	switch value := v.(type) {
+	case map[string]any:
+		for _, key := range []string{"bucket", "quota", "type", "code", "message", "detail", "error", "error_description"} {
+			if hint := quotaBucketHintFromPayload(value[key]); hint != "" {
+				return hint
+			}
+		}
+		for _, item := range value {
+			if hint := quotaBucketHintFromPayload(item); hint != "" {
+				return hint
+			}
+		}
+	case []any:
+		for _, item := range value {
+			if hint := quotaBucketHintFromPayload(item); hint != "" {
+				return hint
+			}
+		}
+	case string:
+		match := quotaBucketPattern.FindStringSubmatch(value)
+		if len(match) == 2 {
+			return strings.ToLower(match[1])
+		}
+	}
+	return ""
+}
+
+func quotaSnapshotBucketByName(payload quotaSnapshotPayload, name string) quotaSnapshotBucket {
+	switch name {
+	case "monthly":
+		return payload.Quota.Monthly
+	case "weekly":
+		return payload.Quota.Weekly
+	default:
+		return payload.Quota.Rolling
+	}
+}
+
+func exhaustedLongQuotaBucket(payload quotaSnapshotPayload) (string, int64, bool) {
+	candidates := []struct {
+		name   string
+		bucket quotaSnapshotBucket
+	}{
+		{name: "monthly", bucket: payload.Quota.Monthly},
+		{name: "weekly", bucket: payload.Quota.Weekly},
+	}
+	var bestName string
+	var bestReset int64
+	for _, candidate := range candidates {
+		if candidate.bucket.UsagePercent < 100 || candidate.bucket.ResetInSec <= 0 {
+			continue
+		}
+		if candidate.bucket.ResetInSec > bestReset {
+			bestName = candidate.name
+			bestReset = candidate.bucket.ResetInSec
+		}
+	}
+	if bestName == "" {
+		return "", 0, false
+	}
+	return bestName, bestReset, true
+}
+
+// ResetCooldown manually clears a key's fail count and cooldown.
+func (p *Picker) ResetCooldown(keyID uint) {
+	store.DB().Model(&store.Key{}).Where("id = ?", keyID).Updates(map[string]any{
+		"fail_count":     0,
+		"cooldown_until": nil,
+	})
+}
+
+// AllByGroup returns all keys (including disabled) for inspection / admin.
+func AllByGroup(group string) ([]store.Key, error) {
+	var keys []store.Key
+	q := store.DB().Order("id asc")
+	if group != "" {
+		q = q.Where("`group` = ?", group)
+	}
+	return keys, q.Find(&keys).Error
+}
+
+// PoolStats returns summary stats for a group.
+type PoolStats struct {
+	Total     int `json:"total"`
+	Enabled   int `json:"enabled"`
+	Available int `json:"available"`
+	Cooldown  int `json:"cooldown"`
+}
+
+// Stats returns pool health stats for a group.
+func (p *Picker) Stats(group string) PoolStats {
+	var all []store.Key
+	store.DB().Where("`group` = ?", group).Find(&all)
+
+	now := time.Now()
+	var s PoolStats
+	s.Total = len(all)
+	for _, k := range all {
+		if !k.Enabled {
+			continue
+		}
+		s.Enabled++
+		if k.CooldownUntil != nil && k.CooldownUntil.After(now) {
+			s.Cooldown++
+			continue
+		}
+		s.Available++
+	}
+	return s
+}

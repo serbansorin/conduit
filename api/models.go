@@ -1,0 +1,39 @@
+package api
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/serbansorin/conduit/config"
+)
+
+// listModels handles GET /v1/models. It returns an OpenAI-style list of the
+// gateway-facing model ids so clients (and humans) can discover the catalog.
+// This endpoint is public (no gateway token) to match the OpenAI convention.
+func listModels(c *gin.Context) {
+	all := config.AllEnabledModels()
+	out := make([]gin.H, 0, len(all))
+	for _, m := range all {
+		out = append(out, gin.H{
+			"id":                   m.ID,
+			"object":               "model",
+			"created":              0,
+			"owned_by":             "conduit",
+			"name":                 m.Name,
+			"protocol":             string(m.Protocol),
+			"context_length":       m.ContextLen,
+			"context_len":          m.ContextLen,
+			"priority":             m.Priority,
+			"tags":                 m.Tags,
+			"architecture":         m.Architecture,
+			"pricing":              m.Pricing,
+			"supported_parameters": m.SupportedParameters,
+			"description":          m.Description,
+			"knowledge_cutoff":     m.KnowledgeCutoff,
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"object": "list",
+		"data":   out,
+	})
+}

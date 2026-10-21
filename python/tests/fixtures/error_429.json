@@ -1,0 +1,6 @@
+{
+  "error": {
+    "type": "rate_limit_exceeded",
+    "message": "rate limit exceeded for this token"
+  }
+}

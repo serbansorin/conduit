@@ -1,0 +1,48 @@
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "glm-5.1",
+      "object": "model",
+      "created": 0,
+      "owned_by": "conduit",
+      "name": "GLM 5.1",
+      "protocol": "chat",
+      "context_length": 200000,
+      "context_len": 200000,
+      "priority": 10,
+      "tags": ["chat", "tools"],
+      "architecture": {
+        "modality": "text->text",
+        "input_modalities": ["text"],
+        "output_modalities": ["text"],
+        "tokenizer": "gpt2",
+        "instruct_type": "chat"
+      },
+      "pricing": {
+        "prompt": "0.000001",
+        "completion": "0.000002"
+      },
+      "supported_parameters": ["temperature", "tools", "max_tokens"],
+      "description": "General purpose chat model.",
+      "knowledge_cutoff": "2025-06"
+    },
+    {
+      "id": "claude-sonnet-5",
+      "object": "model",
+      "created": 0,
+      "owned_by": "conduit",
+      "name": "Claude Sonnet 5",
+      "protocol": "messages",
+      "context_length": 200000,
+      "context_len": 200000,
+      "priority": 20,
+      "tags": ["messages", "tools"],
+      "architecture": {},
+      "pricing": {},
+      "supported_parameters": ["temperature", "tools"],
+      "description": "Anthropic style model.",
+      "knowledge_cutoff": ""
+    }
+  ]
+}

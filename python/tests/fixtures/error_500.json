@@ -1,0 +1,6 @@
+{
+  "error": {
+    "type": "upstream_error",
+    "message": "upstream service error"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "error": {
+    "type": "permission_denied",
+    "message": "this token is not allowed to use group: go"
+  }
+}

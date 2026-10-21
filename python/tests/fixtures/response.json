@@ -1,0 +1,28 @@
+{
+  "id": "resp_conduit_0001",
+  "object": "response",
+  "model": "glm-5.1",
+  "status": "completed",
+  "instructions": null,
+  "output": [
+    {
+      "id": "msg_conduit_0001",
+      "type": "message",
+      "role": "assistant",
+      "status": "completed",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "Hello from Conduit.",
+          "annotations": []
+        }
+      ]
+    }
+  ],
+  "output_text": "Hello from Conduit.",
+  "usage": {
+    "input_tokens": 11,
+    "output_tokens": 5,
+    "total_tokens": 16
+  }
+}

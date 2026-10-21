@@ -1,0 +1,61 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+conduit
+/conduit-*
+
+# Test binary
+*.test
+
+# Output of go coverage
+*.out
+
+# Go workspace
+go.work
+
+# IDE
+.vscode/
+.idea/
+
+# Agent workspace
+.serena/
+.helloagents/
+.omo/
+*.swp
+*.swo
+
+# Local planning notes (kept private, not published)
+PLAN.md
+
+# Data directory (SQLite, local dev)
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# Python SDK
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+
+# Desktop app
+/desktop/build/bin/
+/desktop/frontend/node_modules/
+/desktop/frontend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+.snow/
+.env
+gateway

@@ -1,0 +1,19 @@
+{
+  "data": [
+    {
+      "id": "glm-5.1",
+      "name": "GLM 5.1",
+      "upstream": "go",
+      "protocol": "chat",
+      "real_model": "glm-5.1",
+      "group": "go",
+      "context_len": 200000,
+      "status": 1,
+      "priority": 10,
+      "tags": ["chat"],
+      "pricing": {
+        "prompt": "0.000001"
+      }
+    }
+  ]
+}

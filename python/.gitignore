@@ -1,0 +1,12 @@
+# Python build and cache artefacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+
+# The repository root .gitignore ignores every path named "conduit" (it is
+# meant for the compiled Go binary). Re-include the Python SDK package.
+!src/conduit/
