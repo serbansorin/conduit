@@ -1,6 +1,6 @@
 ﻿/**
- * 访问令牌管理页面 - 组合式函数
- * 支持模态框创建、修改、删除，以及过期时间、请求限额和用量追踪
+ * Access token management page - composable
+ * Supports creating, editing and deleting via modal, plus expiry, request limits and usage tracking
  */
 
 const { ref, reactive } = Vue;
@@ -18,7 +18,7 @@ export function useTokens(api, showToast, t, showConfirm) {
     expires_at: "",
   });
 
-  /** 打开创建模态框 */
+  /** Opens the create dialog. */
   function openTokenModal() {
     editingTokenId.value = null;
     newToken.name = "";
@@ -29,7 +29,7 @@ export function useTokens(api, showToast, t, showConfirm) {
     showTokenModal.value = true;
   }
 
-  /** 打开编辑模态框 */
+  /** Opens the edit dialog. */
   function openTokenSettings(tk) {
     editingTokenId.value = tk.id;
     newToken.name = tk.name || "";
@@ -40,7 +40,7 @@ export function useTokens(api, showToast, t, showConfirm) {
     showTokenModal.value = true;
   }
 
-  /** 关闭模态框 */
+  /** Closes the dialog. */
   function closeTokenModal() {
     showTokenModal.value = false;
     editingTokenId.value = null;
@@ -111,7 +111,7 @@ export function useTokens(api, showToast, t, showConfirm) {
     );
   }
 
-  /** 格式化为日期时间字符串 */
+  /** Formats as a date-time string. */
   function fmtTokenExpiry(iso) {
     if (!iso) return t("tokens.never");
     const d = new Date(iso);

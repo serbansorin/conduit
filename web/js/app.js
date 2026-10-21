@@ -1,7 +1,7 @@
 ﻿/**
- * Conduit 管理面板 - 主入口
+ * Conduit admin panel - main entry
  *
- * ES Module 入口文件，导入各模块并创建 Vue 3 应用。
+ * ES Module entry file: imports each module and creates the Vue 3 app.
  */
 
 import { icons } from "./icons.js?v=20260725a";
@@ -19,7 +19,7 @@ const { createApp, reactive, ref, watch } = Vue;
 
 createApp({
   setup() {
-    // ─── 全局状态 ─────────────────────────────────────
+    // ─── Global state ─────────────────────────────
     // A ?token= query parameter lets the desktop app hand over a session
     // directly, and lets an operator share a signed-in link. The parameter is
     // consumed once and stripped from the URL so it never lingers in history.
@@ -45,7 +45,7 @@ createApp({
       { id: 'ollama', page: 'ollama-keys', labelKey: 'nav.ollama' },
     ]);
 
-    // 版本与更新检查
+    // Version and update check
     const appVersion = ref("");
     const githubUrl = ref("https://github.com/serbansorin/conduit");
     const latestVersion = ref("");
@@ -131,7 +131,7 @@ createApp({
       }
     }
 
-    // ─── 国际化 ───────────────────────────────────────
+    // ─── Internationalisation ──────────────────────
     function t(key, params) {
       const keys = key.split(".");
       let val = locales[locale.value];
@@ -147,7 +147,7 @@ createApp({
       document.documentElement.lang = val === "zh" ? "zh-CN" : "en";
     });
 
-    // ─── 主题 ─────────────────────────────────────────
+    // ─── Theme ──────────────────────────────────────
     function toggleTheme() {
       theme.value = theme.value === "dark" ? "light" : "dark";
     }
@@ -158,10 +158,10 @@ createApp({
       document.documentElement.dataset.theme = val;
     });
 
-    // ─── API 客户端 ───────────────────────────────────
+    // ─── API client ────────────────────────────────
     const { api } = createApi(token);
 
-    // ─── 登录 / 注销 ──────────────────────────────────
+    // ─── Login / logout ───────────────────────────
     async function login() {
       loginError.value = "";
       logging.value = true;
@@ -183,7 +183,7 @@ createApp({
       localStorage.removeItem("admin_token");
     }
 
-    // ─── 版本 / 更新检查 ─────────────────────────────
+    // ─── Version / update check ────────────────
     async function checkUpdate(manual = true) {
       if (!token.value || updateChecking.value) return;
       updateChecking.value = true;
@@ -214,7 +214,7 @@ createApp({
       }
     }
 
-    // ─── 确认弹窗 ─────────────────────────────────────
+    // ─── Confirmation dialog ──────────────────────
     function showConfirm(type, item, name) {
       confirm.cancelText = t("confirm.cancel");
       if (type === "logout") {
@@ -259,7 +259,7 @@ createApp({
       if (fn) await fn();
     }
 
-    // ─── 页面组合式函数 ───────────────────────────────
+    // ─── Page composables ──────────────────────
     const dashboard = useDashboard(api, showToast, t);
     const ops = useOps(api, showToast, t);
     const usage = useUsage(api, showToast, t);
@@ -268,15 +268,15 @@ createApp({
     const models = useModels(api, showToast, t, showConfirm);
     const mappings = useMappings(api, showToast, t, showConfirm);
 
-    // ─── 初始化 ───────────────────────────────────────
+    // ─── Initialisation ────────────────────────────
     if (token.value) dashboard.load();
-    // 登录后自动检查更新（每 24h 最多一次，静默）
+    // Automatically check for updates after login (at most once every 24h, silently)
     if (token.value) {
       const lastCheck = Number(localStorage.getItem("update_checked_at") || 0);
       if (!lastCheck || Date.now() - lastCheck > 24 * 60 * 60 * 1000) {
         checkUpdate(false);
       } else {
-        // 仍拉取一次版本号用于顶栏展示，但不弹 toast
+        // Still fetch the version once for the top bar, but do not show a toast
         api("/version", "GET", null, t)
           .then((d) => {
             appVersion.value = d.version || "";
@@ -307,9 +307,9 @@ createApp({
       channelOpen.value = !channelOpen.value;
     }
 
-    // ─── 暴露给模板 ───────────────────────────────────
+    // ─── Exposed to templates ────────────────────
     return {
-      // 全局
+      // Global
       token,
       password,
       loginError,
@@ -349,7 +349,7 @@ createApp({
       capabilityLabel,
       copyText,
 
-      // 仪表盘
+      // Dashboard
       stats: dashboard.stats,
       compactNumber: dashboard.compactNumber,
       formatTokens: dashboard.formatTokens,
@@ -360,7 +360,7 @@ createApp({
       statusLabel: dashboard.statusLabel,
       recentErrors: dashboard.recentErrors,
 
-      // 运维监控
+      // Operations monitoring
       opsStats: ops.stats,
       opsHealth: ops.health,
       opsLoading: ops.loading,
@@ -373,7 +373,7 @@ createApp({
       opsRecentErrors: ops.recentErrors,
       opsUpdatedLabel: ops.updatedLabel,
 
-      // 使用记录
+      // Usage logs
       usageLogs: usage.logs,
       usageLoading: usage.loading,
       usageFilters: usage.filters,
@@ -407,7 +407,7 @@ createApp({
       usageErrorDetail: usage.errorDetail,
       usagePageRange: usage.pageRange,
 
-      // 密钥管理
+      // Key management
       keys: keys.keys,
       newKey: keys.newKey,
       githubImport: keys.githubImport,
@@ -440,7 +440,7 @@ createApp({
       normalizeKeyCookie: keys.normalizeKeyCookie,
       normalizeKeyWorkspace: keys.normalizeKeyWorkspace,
 
-      // 令牌管理
+      // Token management
       tokens: tokens.tokens,
       newToken: tokens.newToken,
       editingTokenId: tokens.editingTokenId,
@@ -461,7 +461,7 @@ createApp({
       tokenUsageTokens: tokens.tokenUsageTokens,
       tokenUsageWindows: tokens.tokenUsageWindows,
 
-      // 模型管理
+      // Model management
       models: models.models,
       filteredModels: models.filteredModels,
       modelStats: models.stats,
@@ -500,7 +500,7 @@ createApp({
       toggleModel: models.toggle,
       deleteModel: models.remove,
 
-      // 模型映射管理
+      // Model mapping management
       mappings: mappings.mappings,
       newMapping: mappings.newMapping,
       editingSource: mappings.editingSource,

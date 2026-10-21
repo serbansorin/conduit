@@ -1,6 +1,6 @@
 /**
- * 模型映射管理页面 - 组合式函数
- * 支持添加/修改/删除 client model -> upstream model 改写规则。
+ * Model mapping management page - composable
+ * Supports adding / editing / deleting client model -> upstream model rewrite rules.
  */
 
 import { validateRequired } from "../api.js?v=20260619a";

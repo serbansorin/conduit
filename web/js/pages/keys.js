@@ -1,6 +1,6 @@
 /**
- * API 密钥管理页面 - 组合式函数
- * 支持模态框添加和修改密钥设置，以及 Go 限额查询
+ * API key management page - composable
+ * Supports adding and editing key settings via modal, plus OpenCode Go quota lookups
  */
 
 import { validateRequired } from "../api.js?v=20260619a";

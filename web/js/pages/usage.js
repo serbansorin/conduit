@@ -1,6 +1,6 @@
 /**
- * 使用记录页面组合式函数。
- * 负责筛选、全局统计、详情弹窗和计费展示格式化。
+ * Usage log page composable.
+ * Handles filtering, global statistics, the detail dialog and billing display formatting.
  */
 
 const { reactive, ref, computed } = Vue;

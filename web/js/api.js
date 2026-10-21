@@ -1,7 +1,7 @@
 /**
- * API 客户端模块
+ * API client module
  *
- * 用法:
+ * Usage:
  *   const { api, headers } = createApi(tokenRef);
  *   const data = await api("/keys", "GET", null, t);
  */

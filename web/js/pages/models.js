@@ -1,9 +1,9 @@
 /**
- * 模型路由管理页面。
+ * Model routing management page.
  *
- * OpenCode Go / Ollama 是可路由上游；OpenRouter 只提供模型元数据。
- * 页面始终以 upstreams + targets 为准，并保留 upstream / protocol /
- * real_model 作为主上游兼容字段。
+ * OpenCode Go / Ollama are routable upstreams; OpenRouter only provides model metadata.
+ * The page always treats upstreams + targets as authoritative and keeps upstream / protocol /
+ * real_model as compatibility fields for the primary upstream.
  */
 
 import { validateRequired } from "../api.js?v=20260719a";
@@ -173,8 +173,8 @@ export function useModels(api, showToast, t, showConfirm) {
   }
 
   /**
-   * 可选目标模型来自当前已同步目录，并按真实上游拆分。
-   * input + datalist 仍允许输入目录之外的自定义模型 ID。
+   * Selectable target models come from the currently synced catalogue, split by target
+   * upstream. The input + datalist still accepts custom model IDs outside the catalogue.
    */
   function availableModelsFor(upstream) {
     const byId = new Map();
