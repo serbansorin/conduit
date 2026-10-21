@@ -343,6 +343,7 @@ func proxyGoUpstream(c *gin.Context, p *pool.Picker, route config.ModelRoute,
 		copyForwardHeaders(req.Header, c.Request.Header)
 		session.Apply(req.Header, c.Request.Header, originalBody, tokenScope(c))
 		applyUpstreamUserAgent(req.Header, c.Request.Header)
+		applyAnthropicVersion(req.Header, upstreamProto)
 		setContentLength(req, len(upstreamBody))
 		injectUpstreamAuth(req.Header, key.Value)
 
@@ -645,6 +646,24 @@ func copyForwardHeaders(dst, src http.Header) {
 		for _, v := range vs {
 			dst.Add(k, v)
 		}
+	}
+}
+
+// anthropicVersion is the API version Anthropic-compatible upstreams expect.
+const anthropicVersion = "2023-06-01"
+
+// applyAnthropicVersion makes sure a request forwarded to a Messages-protocol
+// upstream carries the version header that upstream requires.
+//
+// Clients that speak the Anthropic API send it themselves, and the header is
+// forwarded verbatim. Clients that only speak OpenAI but target the Messages
+// endpoint do not, so the gateway fills it in.
+func applyAnthropicVersion(h http.Header, upstreamProto config.Protocol) {
+	if upstreamProto != config.ProtocolMessages {
+		return
+	}
+	if h.Get("Anthropic-Version") == "" {
+		h.Set("Anthropic-Version", anthropicVersion)
 	}
 }
 

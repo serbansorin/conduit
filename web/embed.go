@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//go:embed admin.html css/*.css js/*.js js/pages/*.js
+//go:embed admin.html css/*.css js/*.js js/pages/*.js vendor/*.js
 var content embed.FS
 
 // AdminHandler returns an http.Handler that serves the admin SPA.

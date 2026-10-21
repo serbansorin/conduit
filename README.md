@@ -498,6 +498,11 @@ Open `http://<gateway>/admin` and sign in with `ADMIN_PASSWORD`.
 The panel is a Vue 3 SPA served as plain ES modules. There is no build step,
 no npm install and no bundler in the loop — the binary embeds the assets.
 
+Its two third-party libraries, Vue and Chart.js, are vendored under
+`web/vendor/` and embedded in the binary. The panel makes **no outbound
+requests**: it works offline, behind an air gap, and without inheriting
+someone else's CDN as a supply-chain dependency.
+
 ---
 
 ## Admin REST API

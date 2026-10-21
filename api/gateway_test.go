@@ -318,3 +318,149 @@ func TestRequestIDHeader(t *testing.T) {
 		t.Fatal("response is missing the X-Request-Id header")
 	}
 }
+
+// TestProxyDefaultsAnthropicVersion proves a Messages-protocol upstream
+// receives the version header even when the client did not send one.
+func TestProxyDefaultsAnthropicVersion(t *testing.T) {
+	setupGatewayTestDB(t)
+
+	captured := &capturedRequest{}
+	upstream := newMockUpstream(t, captured)
+
+	originalBase := config.Get().GoBaseURL
+	config.Get().GoBaseURL = upstream.URL
+	t.Cleanup(func() { config.Get().GoBaseURL = originalBase })
+
+	insertTestKey(t, "test-key-anthropic")
+	registerTestModel(t, "minimax-m3")
+	tok, err := pool.CreateToken("token-anthropic", "", 0, nil)
+	if err != nil {
+		t.Fatalf("create token: %v", err)
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := NewRouter(pool.NewPicker())
+
+	body := `{"model":"minimax-m3","max_tokens":16,"messages":[{"role":"user","content":"hello"}]}`
+	req := httptest.NewRequest(http.MethodPost, "/v1/messages", strings.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+tok.Token)
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200; body=%s", rec.Code, rec.Body.String())
+	}
+
+	headers, _, _ := captured.snapshot()
+	if got := headers.Get("Anthropic-Version"); got != "2023-06-01" {
+		t.Fatalf("Anthropic-Version = %q, want %q", got, "2023-06-01")
+	}
+}
+
+// TestProxyPreservesClientAnthropicVersion proves a client-supplied version
+// survives the hop instead of being overwritten.
+func TestProxyPreservesClientAnthropicVersion(t *testing.T) {
+	setupGatewayTestDB(t)
+
+	captured := &capturedRequest{}
+	upstream := newMockUpstream(t, captured)
+
+	originalBase := config.Get().GoBaseURL
+	config.Get().GoBaseURL = upstream.URL
+	t.Cleanup(func() { config.Get().GoBaseURL = originalBase })
+
+	insertTestKey(t, "test-key-anthropic-2")
+	registerTestModel(t, "minimax-m3")
+	tok, err := pool.CreateToken("token-anthropic-2", "", 0, nil)
+	if err != nil {
+		t.Fatalf("create token: %v", err)
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := NewRouter(pool.NewPicker())
+
+	body := `{"model":"minimax-m3","max_tokens":16,"messages":[{"role":"user","content":"hello"}]}`
+	req := httptest.NewRequest(http.MethodPost, "/v1/messages", strings.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+tok.Token)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Anthropic-Version", "2023-01-01")
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200; body=%s", rec.Code, rec.Body.String())
+	}
+
+	headers, _, _ := captured.snapshot()
+	if got := headers.Get("Anthropic-Version"); got != "2023-01-01" {
+		t.Fatalf("Anthropic-Version = %q, want %q", got, "2023-01-01")
+	}
+}
+
+// TestAuthFallsBackToApiKey proves an Authorization header that carries no
+// token does not shadow a valid x-api-key.
+func TestAuthFallsBackToApiKey(t *testing.T) {
+	setupGatewayTestDB(t)
+
+	tok, err := pool.CreateToken("fallback-token", "", 0, nil)
+	if err != nil {
+		t.Fatalf("create token: %v", err)
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := NewRouter(pool.NewPicker())
+
+	for _, authorization := range []string{"Bearer ", "Basic dXNlcjpwYXNz"} {
+		req := httptest.NewRequest(http.MethodGet, "/v1/models", nil)
+		req.Header.Set("Authorization", authorization)
+		req.Header.Set("X-Api-Key", tok.Token)
+		rec := httptest.NewRecorder()
+		router.ServeHTTP(rec, req)
+		if rec.Code != http.StatusOK {
+			t.Fatalf("Authorization %q: status = %d, want 200; body=%s", authorization, rec.Code, rec.Body.String())
+		}
+	}
+}
+
+// TestErrorEnvelopeIsAnthropicCompatible proves error responses carry the
+// top-level type marker the Anthropic SDK looks for.
+func TestErrorEnvelopeIsAnthropicCompatible(t *testing.T) {
+	setupGatewayTestDB(t)
+
+	tok, err := pool.CreateToken("error-envelope", "", 0, nil)
+	if err != nil {
+		t.Fatalf("create token: %v", err)
+	}
+
+	gin.SetMode(gin.TestMode)
+	router := NewRouter(pool.NewPicker())
+
+	body := `{"model":"definitely-not-a-model","max_tokens":8,"messages":[{"role":"user","content":"hi"}]}`
+	req := httptest.NewRequest(http.MethodPost, "/v1/messages", strings.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+tok.Token)
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusNotFound {
+		t.Fatalf("status = %d, want 404; body=%s", rec.Code, rec.Body.String())
+	}
+
+	var payload struct {
+		Type  string `json:"type"`
+		Error struct {
+			Type    string `json:"type"`
+			Message string `json:"message"`
+		} `json:"error"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &payload); err != nil {
+		t.Fatalf("decode response: %v; body=%s", err, rec.Body.String())
+	}
+	if payload.Type != "error" {
+		t.Fatalf("top-level type = %q, want %q", payload.Type, "error")
+	}
+	if payload.Error.Type != "model_not_found" {
+		t.Fatalf("error.type = %q, want model_not_found", payload.Error.Type)
+	}
+}

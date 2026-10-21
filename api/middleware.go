@@ -11,12 +11,20 @@ import (
 
 // extractToken pulls the bearer token from Authorization header (preferred) or
 // the `x-api-key` header / `api_key` query param (Anthropic-style fallbacks).
+//
+// The Authorization header only wins when it actually carries a token. A
+// client that sends an empty or non-token Authorization header alongside a
+// valid x-api-key still authenticates, which is what Anthropic SDK and
+// Claude Code expect.
 func extractToken(c *gin.Context) string {
 	if h := c.GetHeader("Authorization"); h != "" {
 		if strings.HasPrefix(strings.ToLower(h), "bearer ") {
-			return strings.TrimSpace(h[7:])
+			if token := strings.TrimSpace(h[7:]); token != "" {
+				return token
+			}
+		} else if token := strings.TrimSpace(h); token != "" {
+			return token
 		}
-		return strings.TrimSpace(h)
 	}
 	if k := c.GetHeader("x-api-key"); k != "" {
 		return strings.TrimSpace(k)
@@ -131,6 +139,7 @@ func RequestLimitMiddleware() gin.HandlerFunc {
 
 func abortAuth(c *gin.Context, msg string) {
 	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+		"type": "error",
 		"error": gin.H{
 			"type":    "authentication_error",
 			"message": msg,

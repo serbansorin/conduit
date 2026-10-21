@@ -218,8 +218,15 @@ func trimUsageError(s string) string {
 }
 
 // writeOpenAIError emits an OpenAI-style error envelope.
+// writeOpenAIError writes an error response.
+//
+// The body carries both the OpenAI shape ({"error": {...}}) and the Anthropic
+// shape ({"type": "error", ...}) so both SDK families can parse it: the
+// Anthropic SDK looks for the top-level type marker, and OpenAI clients read
+// the nested object.
 func writeOpenAIError(c *gin.Context, status int, errType, message string) {
 	c.JSON(status, gin.H{
+		"type": "error",
 		"error": gin.H{
 			"type":    errType,
 			"message": message,
