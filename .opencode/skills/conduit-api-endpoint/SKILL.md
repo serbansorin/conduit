@@ -378,6 +378,10 @@ test there. Put a route or handler test in `api/gateway_test.go`.
 - `admin.Mount` is called on the group, so the paths inside it are relative.
   `admin.MountWithPicker(root.Group("/admin"), picker)` makes them
   `/admin/...`.
+- `RequireGroup()` in `api/middleware.go` is defined but is not registered on
+  any router. The group permission check actually happens inside
+  `api/proxy.go`, per upstream, in the failover loop. Do not assume the
+  middleware is running.
 - The panel is served from `GET /admin` plus a `NoRoute` fallback for any
   `/admin/...` path. A new admin **API** route must not collide with a panel
   path.
