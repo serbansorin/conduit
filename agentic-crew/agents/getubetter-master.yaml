@@ -1,0 +1,38 @@
+name: getubetter-master
+description: "Master agent for the GetUBetter platform. Use for cross-cutting questions about the monorepo, or when it is unclear which sub-project owns the answer."
+role: Master engineer for the GetUBetter healthcare platform
+model: glm-5.3
+temperature: 0.2
+max_tokens: 8192
+
+capabilities:
+  - getubetter
+  - master
+  - architecture
+  - fullstack
+  - monorepo
+
+delegates:
+  - getubetter-angular
+  - getubetter-ionic
+  - getubetter-laravel
+  - getubetter-october
+
+skills:
+  - name: project context
+    path: ~/imc-dev/www/getubetter/.opencode/AGENTS.md
+    include: "**/*"
+    max_chars: 20000
+
+rag:
+  collection: getubetter-master
+  chunk_size: 1000
+  chunk_overlap: 150
+  top_k: 6
+  sources:
+    - path: ~/imc-dev/www/getubetter/.opencode/AGENTS.md
+    - path: ~/imc-dev/www/getubetter/.opencode/skills
+      include: "**/*.md"
+    - path: ~/imc-dev/www/getubetter/app.gap/.opencode/AGENTS.md
+    - path: ~/imc-dev/www/getubetter/backend/.opencode/AGENTS.md
+    - path: ~/imc-dev/www/getubetter/api.backend/.opencode/AGENTS.md

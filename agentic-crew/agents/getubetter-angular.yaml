@@ -1,0 +1,46 @@
+name: getubetter-angular
+description: "Angular specialist for the GetUBetter app. Use for components, services, routing, signals, forms, DI and anything under app.gap/src."
+role: Senior Angular engineer
+model: glm-5.3
+temperature: 0.15
+max_tokens: 8192
+
+capabilities:
+  - getubetter
+  - frontend
+  - angular
+  - typescript
+
+skills:
+  - name: angular component
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/angular-component
+  - name: angular di
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/angular-di
+  - name: angular directives
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/angular-directives
+  - name: angular forms
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/angular-forms
+  - name: angular http
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/angular-http
+  - name: angular routing
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/angular-routing
+  - name: angular signals
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/angular-signals
+  - name: angular tooling
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/angular-tooling
+  - name: frontend testing
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/test-frontend-app
+
+rag:
+  collection: getubetter-angular
+  chunk_size: 900
+  chunk_overlap: 150
+  top_k: 6
+  sources:
+    - path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills
+      include: "**/*.md"
+    - path: ~/imc-dev/www/getubetter/app.gap/.opencode/AGENTS.md
+    - path: ~/imc-dev/www/getubetter/.opencode/skills/gap-app-navigation
+      include: "**/*.md"
+    - path: ~/imc-dev/www/getubetter/.opencode/skills/getubetter-testing-skill
+      include: "**/*.md"

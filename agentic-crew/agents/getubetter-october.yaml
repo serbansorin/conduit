@@ -1,0 +1,40 @@
+name: getubetter-october
+description: "October CMS specialist for the GetUBetter backend plugin. Use for models, controllers, form widgets, blueprints, behaviour, migrations and the Imc\\Gap plugin."
+role: October CMS and Laravel plugin engineer
+model: glm-5.3
+temperature: 0.15
+max_tokens: 8192
+
+capabilities:
+  - getubetter
+  - backend
+  - october
+  - octobercms
+  - php
+  - plugin
+
+skills:
+  - name: gap blueprint
+    path: ~/imc-dev/www/getubetter/backend/.opencode/skills/imc-gap-blueprint
+  - name: gap dev preferences
+    path: ~/imc-dev/www/getubetter/backend/.opencode/skills/imc-gap-dev-preferences
+  - name: form widget casing
+    path: ~/imc-dev/www/getubetter/backend/.opencode/skills/october-formwidget-casing
+  - name: backend domain knowledge
+    path: ~/imc-dev/www/getubetter/backend/.opencode/skills/backend-domain-knowledge
+  - name: api sync
+    path: ~/imc-dev/www/getubetter/backend/.opencode/skills/api-sync
+
+rag:
+  collection: getubetter-october
+  chunk_size: 900
+  chunk_overlap: 150
+  top_k: 6
+  sources:
+    - path: ~/imc-dev/www/getubetter/backend/.opencode/skills
+      include: "**/*.md"
+    - path: ~/imc-dev/www/getubetter/backend/.opencode/AGENTS.md
+    - path: ~/imc-dev/www/getubetter/.opencode/skills/backend-domain-knowledge
+      include: "**/*.md"
+    - path: ~/imc-dev/www/getubetter/.opencode/skills/backend-translations
+      include: "**/*.md"

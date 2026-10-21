@@ -1,0 +1,36 @@
+name: getubetter-laravel
+description: "Laravel specialist for the GetUBetter api.backend and the Laravel side of the backend. Use for controllers, services, jobs, queues, models, testing and the Laravel 13 stack."
+role: Senior Laravel engineer
+model: glm-5.3
+temperature: 0.15
+max_tokens: 8192
+
+capabilities:
+  - getubetter
+  - backend
+  - laravel
+  - php
+
+skills:
+  - name: laravel
+    path: ~/imc-dev/www/getubetter/api.backend/.opencode/skills/laravel-13
+  - name: api domain knowledge
+    path: ~/imc-dev/www/getubetter/api.backend/.opencode/skills/api-backend-domain-knowledge
+  - name: scribe annotations
+    path: ~/imc-dev/www/getubetter/api.backend/.opencode/skills/scribe-annotations
+  - name: webform conditional logic
+    path: ~/imc-dev/www/getubetter/api.backend/.opencode/skills/webform-conditional-logic
+
+rag:
+  collection: getubetter-laravel
+  chunk_size: 900
+  chunk_overlap: 150
+  top_k: 6
+  sources:
+    - path: ~/imc-dev/www/getubetter/api.backend/.opencode/skills
+      include: "**/*.md"
+    - path: ~/imc-dev/www/getubetter/api.backend/.opencode/AGENTS.md
+    - path: ~/imc-dev/www/getubetter/backend/.opencode/skills/command-center-workflow
+      include: "**/*.md"
+    - path: ~/imc-dev/www/getubetter/backend/.opencode/skills/translation-system
+      include: "**/*.md"

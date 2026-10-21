@@ -1,0 +1,35 @@
+name: getubetter-ionic
+description: "Ionic and Capacitor specialist for the GetUBetter app. Use for mobile builds, native plugins, device APIs, app store packaging and anything touching Capacitor."
+role: Ionic and Capacitor engineer
+model: glm-5.3
+temperature: 0.15
+max_tokens: 8192
+
+capabilities:
+  - getubetter
+  - frontend
+  - ionic
+  - capacitor
+  - mobile
+
+skills:
+  - name: angular tooling
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/angular-tooling
+  - name: frontend testing
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/test-frontend-app
+  - name: symptom checker testing
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/gap-symptom-checker-testing
+  - name: playwright testing
+    path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills/playwright-extension-testing
+
+rag:
+  collection: getubetter-ionic
+  chunk_size: 900
+  chunk_overlap: 150
+  top_k: 6
+  sources:
+    - path: ~/imc-dev/www/getubetter/app.gap/.opencode/skills
+      include: "**/*.md"
+    - path: ~/imc-dev/www/getubetter/app.gap/.opencode/AGENTS.md
+    - path: ~/imc-dev/www/getubetter/.opencode/skills/gap-app-navigation
+      include: "**/*.md"
