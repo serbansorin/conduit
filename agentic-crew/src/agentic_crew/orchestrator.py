@@ -63,6 +63,8 @@ __all__ = [
 #: a routing call apart from an answering call.
 CATALOGUE_MARKER = "AVAILABLE SPECIALISTS:"
 
+DELEGATE_MARKER = "YOUR SPECIALISTS:"
+
 _ROUTER_SYSTEM = (
     "You are the router of a crew of specialist agents. You never answer the "
     "question yourself. You only choose the one specialist that should answer "
@@ -71,6 +73,14 @@ _ROUTER_SYSTEM = (
 
 _ROUTER_TEMPERATURE = 0.0
 _ROUTER_MAX_TOKENS = 128
+
+_DELEGATE_SYSTEM = (
+    "You are the master of a team of specialist agents. You decide whether to "
+    "hand the question to one of your specialists or to answer it yourself. "
+    "You reply with the name of the specialist, or with NONE."
+)
+
+_NONE_RE = re.compile(r"^(none|no\s?one|myself|self|keep|master)$", re.I)
 
 _TOKEN_RE = re.compile(r"[a-z0-9]+")
 
@@ -552,10 +562,12 @@ class CrewOrchestrator:
         """
         builder = StateGraph(CrewState)
         builder.add_node("route", self._route)
+        builder.add_node("delegate", self._delegate)
         builder.add_node("retrieve", self._retrieve)
         builder.add_node("answer", self._answer)
         builder.add_edge(START, "route")
-        builder.add_edge("route", "retrieve")
+        builder.add_edge("route", "delegate")
+        builder.add_edge("delegate", "retrieve")
         builder.add_edge("retrieve", "answer")
         builder.add_edge("answer", END)
         return builder.compile()
@@ -593,6 +605,154 @@ class CrewOrchestrator:
         chosen, detail = self._choose_agent(str(state.get("question", "")))
         steps.append({"node": "route", "detail": detail})
         return {"agent": chosen, "steps": steps}
+
+    def _delegate(self, state: CrewState) -> Dict[str, Any]:
+        """Let a master agent hand the work to one of its specialists.
+
+        An agent that declares no delegates, or whose delegates are not
+        registered, keeps the question and answers it itself.
+
+        Args:
+            state: The current state.
+
+        Returns:
+            The state update.
+        """
+        steps = list(state.get("steps") or [])
+        name = str(state.get("agent") or "")
+        definition = self.registry.get(name)
+        delegates = [
+            delegate
+            for delegate in (list(getattr(definition, "delegates", None) or []))
+            if self.registry.get(delegate) is not None
+        ]
+        if not delegates:
+            steps.append(
+                {
+                    "node": "delegate",
+                    "detail": f"{name!r} has no specialists, it answers itself",
+                }
+            )
+            return {"steps": steps}
+
+        question = str(state.get("question", ""))
+        chosen: Optional[str] = None
+        detail = ""
+
+        try:
+            reply = self._ask_delegate(definition, question, delegates)
+            if _NONE_RE.match(_choice_text(reply).strip().strip("\"'`.,:;!?[]{}")):
+                steps.append(
+                    {"node": "delegate", "detail": f"{name!r} kept the question itself"}
+                )
+                return {"steps": steps}
+            chosen = _parse_choice(reply, delegates)
+            if chosen:
+                detail = f"{name!r} delegated to {chosen!r}"
+        except Exception as exc:  # noqa: BLE001 - delegation is best effort
+            log.warning("the delegation check failed: %s", exc)
+            detail = f"delegation check failed: {exc}"
+
+        if not chosen:
+            scored = [
+                (_score_agent(question, self.registry.get(delegate)), delegate)
+                for delegate in delegates
+            ]
+            best_score, best = max(scored, key=lambda item: item[0])
+            if best_score > 0:
+                chosen = best
+                detail = (
+                    f"{name!r} delegated to {chosen!r} "
+                    f"(keyword match, score {best_score})"
+                )
+
+        if not chosen:
+            steps.append(
+                {"node": "delegate", "detail": f"{name!r} kept the question itself"}
+            )
+            return {"steps": steps}
+
+        steps.append({"node": "delegate", "detail": detail})
+        return {"agent": chosen, "steps": steps}
+
+    def _ask_delegate(
+        self,
+        definition: Any,
+        question: str,
+        delegates: Sequence[str],
+    ) -> str:
+        """Ask a master which of its specialists should take the question.
+
+        Args:
+            definition: The master agent.
+            question: The question.
+            delegates: The names the master may hand to.
+
+        Returns:
+            The master's reply.
+        """
+        catalogue = "\n".join(
+            f"- {name}: {self.registry.get(name).description}"
+            for name in delegates
+            if self.registry.get(name) is not None
+        )
+        prompt = (
+            f"You are the master agent {getattr(definition, 'name', 'master')!r}.\n"
+            f"Question: {question}\n\n"
+            f"{DELEGATE_MARKER}\n{catalogue}\n\n"
+            'Reply with JSON: {"agent": "<specialist name>"} to hand the '
+            'question over, or {"agent": "NONE"} to answer it yourself.'
+        )
+
+        model = self._llm_factory(
+            self.settings.conduit_base_url,
+            self.settings.conduit_api_key,
+            getattr(definition, "model", "") or self.settings.default_model,
+            getattr(definition, "temperature", 0.0),
+            getattr(definition, "max_tokens", 2048),
+        )
+        messages: List[BaseMessage] = [
+            SystemMessage(content=_DELEGATE_SYSTEM),
+            HumanMessage(content=prompt),
+        ]
+
+        try:
+            structured = model.with_structured_output(_RouteChoice)
+            parsed = structured.invoke(messages)
+            choice = _choice_text(parsed)
+            if choice:
+                return choice
+        except Exception as exc:  # noqa: BLE001 - not every model can do this
+            log.debug("structured delegation unavailable: %s", exc)
+
+        return _message_text(model.invoke(messages))
+
+    def _delegate_brief(self, definition: Any) -> str:
+        """Describe a master's specialists, for its own system prompt.
+
+        Args:
+            definition: The master agent.
+
+        Returns:
+            A short brief, or an empty string when it has no specialists.
+        """
+        delegates = [
+            delegate
+            for delegate in (list(getattr(definition, "delegates", None) or []))
+            if self.registry.get(delegate) is not None
+        ]
+        if not delegates:
+            return ""
+        lines = [
+            f"- {name}: {self.registry.get(name).description}"
+            for name in delegates
+            if self.registry.get(name) is not None
+        ]
+        return (
+            "You lead a team. When the question belongs to one of these "
+            "specialists, say so and answer from their field instead:\n"
+            + "\n".join(lines)
+        )
 
     def _retrieve(self, state: CrewState) -> Dict[str, Any]:
         """Retrieve the material relevant to the question.
@@ -679,6 +839,9 @@ class CrewOrchestrator:
             system_prompt = definition.system_prompt(
                 str(state.get("retrieved_context", "") or "")
             )
+            brief = self._delegate_brief(definition)
+            if brief:
+                system_prompt = f"{system_prompt}\n\n{brief}".strip()
             if system_prompt.strip():
                 messages.append(SystemMessage(content=system_prompt))
             messages.append(HumanMessage(content=str(state.get("question", ""))))

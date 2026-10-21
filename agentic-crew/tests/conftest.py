@@ -19,7 +19,11 @@ from pydantic import Field
 
 from agentic_crew.config import Settings
 from agentic_crew.models import AgentDefinition, RagConfig
-from agentic_crew.orchestrator import CATALOGUE_MARKER, CrewOrchestrator
+from agentic_crew.orchestrator import (
+    CATALOGUE_MARKER,
+    DELEGATE_MARKER,
+    CrewOrchestrator,
+)
 from agentic_crew.registry import AgentRegistry
 
 ALPHA_YAML = """
@@ -79,6 +83,7 @@ class FakeChatModel(BaseChatModel):
     """
 
     router_reply: str = '{"agent": "alpha"}'
+    delegate_reply: str = '{"agent": "NONE"}'
     answer_reply: str = "A deterministic answer."
     fail: bool = False
     calls: List[Dict[str, Any]] = Field(default_factory=list)
@@ -114,6 +119,7 @@ class FakeChatModel(BaseChatModel):
             {
                 "text": text,
                 "is_router": CATALOGUE_MARKER in text,
+                "is_delegate": DELEGATE_MARKER in text,
                 "system": [
                     str(message.content)
                     for message in messages
@@ -123,7 +129,12 @@ class FakeChatModel(BaseChatModel):
         )
         if self.fail:
             raise RuntimeError("the gateway is unreachable")
-        reply = self.router_reply if CATALOGUE_MARKER in text else self.answer_reply
+        if DELEGATE_MARKER in text:
+            reply = self.delegate_reply
+        elif CATALOGUE_MARKER in text:
+            reply = self.router_reply
+        else:
+            reply = self.answer_reply
         return ChatResult(generations=[ChatGeneration(message=AIMessage(content=reply))])
 
 

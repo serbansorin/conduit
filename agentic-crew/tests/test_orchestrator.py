@@ -15,6 +15,7 @@ from fastapi.testclient import TestClient
 
 from agentic_crew.cli import main
 from agentic_crew.config import Settings
+from agentic_crew.models import AgentDefinition
 from agentic_crew.orchestrator import (
     CrewOrchestrator,
     NoAgentsError,
@@ -237,6 +238,7 @@ def test_every_step_names_a_node_and_a_detail(
 
     assert [step["node"] for step in result.steps] == [
         "route",
+        "delegate",
         "retrieve",
         "answer",
     ]
@@ -259,7 +261,12 @@ def test_streaming_yields_the_steps_as_they_happen(
     """The stream reports every node as it completes."""
     events = list(orchestrator.stream("a question", agent="alpha"))
 
-    assert [event["node"] for event in events] == ["route", "retrieve", "answer"]
+    assert [event["node"] for event in events] == [
+        "route",
+        "delegate",
+        "retrieve",
+        "answer",
+    ]
     assert events[-1]["answer"] == "A deterministic answer."
 
 
@@ -564,3 +571,91 @@ def test_run_with_a_blank_question_is_a_400(settings: Settings) -> None:
 
     assert response.status_code == 400
     assert response.json()["error"] == "invalid_request"
+
+
+# ----------------------------------------------------------------------
+# delegation
+# ----------------------------------------------------------------------
+def test_a_master_hands_the_work_to_a_specialist(
+    orchestrator: CrewOrchestrator,
+    model: FakeChatModel,
+    registry: AgentRegistry,
+) -> None:
+    """A master that names a specialist hands the question over."""
+    master = AgentDefinition(
+        name="master",
+        description="Master engineer. Coordinates the other agents.",
+        role="Master engineer",
+        model="glm-5.3",
+        instructions="Coordinate the team.",
+        delegates=["alpha"],
+    )
+    registry.add(master)
+    model.delegate_reply = '{"agent": "alpha"}'
+
+    result = orchestrator.run("how do I use signals?", agent="master")
+
+    assert result.agent == "alpha"
+    delegated = [step for step in result.steps if step["node"] == "delegate"]
+    assert delegated, "the delegation step is missing"
+    assert "delegated" in delegated[0]["detail"]
+    assert "alpha" in delegated[0]["detail"]
+
+
+def test_a_master_keeps_a_question_it_can_answer(
+    orchestrator: CrewOrchestrator,
+    model: FakeChatModel,
+    registry: AgentRegistry,
+) -> None:
+    """A master that answers for itself keeps the question."""
+    master = AgentDefinition(
+        name="master",
+        description="Master engineer. Coordinates the other agents.",
+        role="Master engineer",
+        model="glm-5.3",
+        delegates=["alpha"],
+    )
+    registry.add(master)
+    model.delegate_reply = '{"agent": "NONE"}'
+
+    result = orchestrator.run("what is the overall architecture?", agent="master")
+
+    assert result.agent == "master"
+    delegated = [step for step in result.steps if step["node"] == "delegate"]
+    assert delegated
+    assert "kept the question" in delegated[0]["detail"]
+
+
+def test_an_agent_without_specialists_says_so(
+    orchestrator: CrewOrchestrator,
+) -> None:
+    """The delegation step is recorded even when there is nothing to delegate."""
+    result = orchestrator.run("a question", agent="alpha")
+
+    delegated = [step for step in result.steps if step["node"] == "delegate"]
+    assert delegated
+    assert "no specialists" in delegated[0]["detail"]
+
+
+def test_delegation_falls_back_to_a_keyword_match(
+    orchestrator: CrewOrchestrator,
+    model: FakeChatModel,
+    registry: AgentRegistry,
+) -> None:
+    """A master that names nobody still routes by keyword."""
+    master = AgentDefinition(
+        name="master",
+        description="Master engineer. Coordinates the other agents.",
+        role="Master engineer",
+        model="glm-5.3",
+        delegates=["alpha", "beta"],
+    )
+    registry.add(master)
+    model.delegate_reply = '{"agent": "does-not-exist"}'
+
+    result = orchestrator.run("an Angular signals question", agent="master")
+
+    assert result.agent in {"alpha", "beta"}
+    delegated = [step for step in result.steps if step["node"] == "delegate"]
+    assert delegated
+    assert "delegated" in delegated[0]["detail"]

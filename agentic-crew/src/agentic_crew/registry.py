@@ -56,6 +56,11 @@ class AgentRegistry:
             return cls(agents, errors)
 
         for path in sorted(root.rglob("*.y*ml")):
+            # A leading underscore marks a file as a template rather than a
+            # live agent, so "_template.yaml" is not registered.
+            if path.name.startswith("_"):
+                log.debug("skipping template %s", path)
+                continue
             try:
                 definition = load_definition(path)
             except Exception as exc:  # noqa: BLE001 - reported, not raised
