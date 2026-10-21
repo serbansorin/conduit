@@ -1,0 +1,20 @@
+name: teacher-unstpb-battery-management-systems-for-evs
+description: "Battery management systems for EVs — UNSTPB, semester 3, 4 ECTS. Teaches: As. Prof. Dr. Ing. Alexandru VASILE. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Battery management systems for EVs (UNSTPB)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - unstpb-battery-management-systems-for-evs
+
+rag:
+  collection: teacher-unstpb-battery-management-systems-for-evs
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/unstpb-battery-management-systems-for-evs
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

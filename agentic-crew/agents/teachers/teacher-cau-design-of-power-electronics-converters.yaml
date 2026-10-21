@@ -1,0 +1,20 @@
+name: teacher-cau-design-of-power-electronics-converters
+description: "Design of power electronics converters — CAU, semester 2, 5 ECTS. Teaches: Prof. Dr.-Ing. Marco LISERRE. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Design of power electronics converters (CAU)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - cau-design-of-power-electronics-converters
+
+rag:
+  collection: teacher-cau-design-of-power-electronics-converters
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/cau-design-of-power-electronics-converters
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

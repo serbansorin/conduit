@@ -1,0 +1,20 @@
+name: teacher-ecn-control-system
+description: "Control system — ECN, semester 1, 4 ECTS. Teaches: Guy LEBRET - guy.lebret@ec-nantes.fr Franck PLESTAN. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Control system (ECN)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - ecn-control-system
+
+rag:
+  collection: teacher-ecn-control-system
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/ecn-control-system
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

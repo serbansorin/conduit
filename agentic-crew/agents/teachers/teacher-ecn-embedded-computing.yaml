@@ -1,0 +1,20 @@
+name: teacher-ecn-embedded-computing
+description: "Embedded computing — ECN, semester 1, 4 ECTS. Teaches: Mickaël HILAIRET. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Embedded computing (ECN)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - ecn-embedded-computing
+
+rag:
+  collection: teacher-ecn-embedded-computing
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/ecn-embedded-computing
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

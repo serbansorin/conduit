@@ -1,0 +1,20 @@
+name: teacher-unstpb-retrofit-control-of-electrical-machines
+description: "Retrofit, control of electrical machines — UNSTPB, semester 3, 4 ECTS. Teaches: As. Prof. Dr. Ing. Bogdan Cristian FLOREA. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Retrofit, control of electrical machines (UNSTPB)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - unstpb-retrofit-control-of-electrical-machines
+
+rag:
+  collection: teacher-unstpb-retrofit-control-of-electrical-machines
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/unstpb-retrofit-control-of-electrical-machines
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

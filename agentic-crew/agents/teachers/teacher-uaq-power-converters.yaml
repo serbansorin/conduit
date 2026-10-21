@@ -1,0 +1,20 @@
+name: teacher-uaq-power-converters
+description: "Power converters — UAQ, semester 2, 5 ECTS. Teaches: Concettina BUCCELLA. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Power converters (UAQ)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - uaq-power-converters
+
+rag:
+  collection: teacher-uaq-power-converters
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/uaq-power-converters
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

@@ -1,0 +1,20 @@
+name: teacher-cau-battery-chargers-for-evs
+description: "Battery chargers for EV’s — CAU, semester 3, 5 ECTS. Teaches: Prof. Dr. Nadia TAN. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Battery chargers for EV’s (CAU)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - cau-battery-chargers-for-evs
+
+rag:
+  collection: teacher-cau-battery-chargers-for-evs
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/cau-battery-chargers-for-evs
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

@@ -1,0 +1,20 @@
+name: teacher-ecn-advanced-control-of-electric-and-hydrogen-propulsion-systems
+description: "Advanced control of electric and hydrogen propulsion systems — ECN, semester 3, 5 ECTS. Teaches: Malek GHANES. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Advanced control of electric and hydrogen propulsion systems (ECN)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - ecn-advanced-control-of-electric-and-hydrogen-propulsion-systems
+
+rag:
+  collection: teacher-ecn-advanced-control-of-electric-and-hydrogen-propulsion-systems
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/ecn-advanced-control-of-electric-and-hydrogen-propulsion-systems
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

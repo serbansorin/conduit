@@ -1,0 +1,20 @@
+name: teacher-unstpb-machine-learning-for-autonomous-systems
+description: "Machine learning for autonomous systems — UNSTPB, semester 2, 4 ECTS. Teaches: Prof. dr. Ing. Anamaria RADOI. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Machine learning for autonomous systems (UNSTPB)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - unstpb-machine-learning-for-autonomous-systems
+
+rag:
+  collection: teacher-unstpb-machine-learning-for-autonomous-systems
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/unstpb-machine-learning-for-autonomous-systems
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

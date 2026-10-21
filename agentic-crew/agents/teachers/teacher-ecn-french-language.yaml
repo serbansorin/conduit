@@ -1,0 +1,20 @@
+name: teacher-ecn-french-language
+description: "French language — ECN, semester 1, 2 ECTS. Teaches: Silvia ERTL. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in French language (ECN)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - ecn-french-language
+
+rag:
+  collection: teacher-ecn-french-language
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/ecn-french-language
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

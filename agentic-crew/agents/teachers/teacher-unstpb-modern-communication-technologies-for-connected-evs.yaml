@@ -1,0 +1,20 @@
+name: teacher-unstpb-modern-communication-technologies-for-connected-evs
+description: "Modern communication technologies for connected EVs — UNSTPB, semester 3, 4 ECTS. Teaches: Prof. Dr. Ing. Daniel OANCEA. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Modern communication technologies for connected EVs (UNSTPB)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - unstpb-modern-communication-technologies-for-connected-evs
+
+rag:
+  collection: teacher-unstpb-modern-communication-technologies-for-connected-evs
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/unstpb-modern-communication-technologies-for-connected-evs
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

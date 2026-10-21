@@ -1,0 +1,20 @@
+name: teacher-uaq-renewable-energy-and-storage-systems
+description: "Renewable energy and storage systems — UAQ, semester 2, 5 ECTS. Teaches: Carlo CECATI. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Renewable energy and storage systems (UAQ)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - uaq-renewable-energy-and-storage-systems
+
+rag:
+  collection: teacher-uaq-renewable-energy-and-storage-systems
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/uaq-renewable-energy-and-storage-systems
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

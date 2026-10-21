@@ -1,0 +1,20 @@
+name: teacher-uaq-optimal-control
+description: "Optimal Control — UAQ, semester 3, 6 ECTS. Teaches: Claudio ARBIB. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Optimal Control (UAQ)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - uaq-optimal-control
+
+rag:
+  collection: teacher-uaq-optimal-control
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/uaq-optimal-control
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

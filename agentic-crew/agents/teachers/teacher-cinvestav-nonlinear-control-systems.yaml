@@ -1,0 +1,20 @@
+name: teacher-cinvestav-nonlinear-control-systems
+description: "Nonlinear control systems — CINVESTAV, semester 2, 5 ECTS. Teaches: the course teaching team. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Nonlinear control systems (CINVESTAV)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - cinvestav-nonlinear-control-systems
+
+rag:
+  collection: teacher-cinvestav-nonlinear-control-systems
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/cinvestav-nonlinear-control-systems
+      extensions: [".pdf", ".md", ".txt", ".pptx"]

@@ -1,0 +1,20 @@
+name: teacher-cinvestav-neural-nets-techniques-for-ev-control
+description: "Neural nets techniques for EV control — CINVESTAV, semester 3, 7.5 ECTS. Teaches: the course teaching team. Use for anything about this course, its theory, its exercises or its exam material."
+role: Lecturer in Neural nets techniques for EV control (CINVESTAV)
+model: deepseek-v4.1-flash
+temperature: 0.3
+max_tokens: 4096
+
+capabilities:
+  - teaching
+  - epic
+  - cinvestav-neural-nets-techniques-for-ev-control
+
+rag:
+  collection: teacher-cinvestav-neural-nets-techniques-for-ev-control
+  chunk_size: 1100
+  chunk_overlap: 180
+  top_k: 8
+  sources:
+    - path: ~/university/epic/cinvestav-neural-nets-techniques-for-ev-control
+      extensions: [".pdf", ".md", ".txt", ".pptx"]
