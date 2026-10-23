@@ -6,6 +6,8 @@
 *.dylib
 conduit
 /conduit-*
+# Screenshots (local artifacts, not committed)
+/conduit-screenshots/
 
 # Test binary
 *.test
