@@ -62,3 +62,8 @@ Thumbs.db
 .snow/
 .env
 gateway
+
+# Agentic crew
+/agentic-crew/data/
+/agentic-crew/.pytest_cache/
+/agentic-crew/tools/__pycache__/
