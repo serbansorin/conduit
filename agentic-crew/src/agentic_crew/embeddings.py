@@ -27,6 +27,7 @@ from .config import Settings
 __all__ = [
     "EmbeddingError",
     "FastEmbedEmbeddings",
+    "HashEmbeddings",
     "build_embeddings",
 ]
 
@@ -205,6 +206,92 @@ def _as_list(vector: Any) -> List[float]:
     return [float(value) for value in vector]
 
 
+
+class HashEmbeddings(Embeddings):
+    """A deterministic, dependency-free embedding backend.
+
+    Uses character n-grams hashed into a fixed-size vector. No model
+    download, no network, no native libraries — works on any Python
+    version. Quality is lower than a real embedding model, but the
+    retrieval still works for keyword-heavy queries and the system
+    degrades gracefully when ``fastembed`` cannot be installed.
+
+    Attributes:
+        dimensions: Size of the produced vectors.
+    """
+
+    def __init__(self, dimensions: int = 256) -> None:
+        """Create the embedder.
+
+        Args:
+            dimensions: Size of the produced vectors.
+        """
+        self.dimensions = max(32, dimensions)
+
+    def _encode(self, text: str) -> List[float]:
+        """Turn text into a vector.
+
+        Args:
+            text: The text to encode.
+
+        Returns:
+            The vector.
+        """
+        import hashlib
+
+        vector = [0.0] * self.dimensions
+        lowered = text.lower()
+        # Character n-grams of length 3 and 4, hashed into the vector.
+        for n in (3, 4):
+            for i in range(len(lowered) - n + 1):
+                gram = lowered[i : i + n]
+                digest = hashlib.sha256(gram.encode("utf-8")).digest()
+                idx = int.from_bytes(digest[:4], "big") % self.dimensions
+                sign = 1.0 if (digest[4] & 1) == 0 else -1.0
+                vector[idx] += sign
+        # L2 normalise so cosine similarity is well-behaved.
+        norm = sum(value * value for value in vector) ** 0.5
+        if norm > 0:
+            vector = [value / norm for value in vector]
+        return vector
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        """Embed a batch of documents.
+
+        Args:
+            texts: The documents.
+
+        Returns:
+            One vector per document.
+        """
+        return [self._encode(text) for text in texts]
+
+    def embed_query(self, text: str) -> List[float]:
+        """Embed a single query.
+
+        Args:
+            text: The query.
+
+        Returns:
+            The vector.
+        """
+        return self._encode(text)
+
+
+def _build_hash(settings: Settings) -> Embeddings:
+    """Build the dependency-free hash embedder.
+
+    Args:
+        settings: The runtime settings.
+
+    Returns:
+        A hash-based embedder.
+    """
+    dimensions = int(settings.embedding_dimensions or 256)
+    return HashEmbeddings(dimensions=dimensions)
+
+
+
 def _build_fastembed(settings: Settings) -> Embeddings:
     """Build the local fastembed backend.
 
@@ -290,7 +377,16 @@ def build_embeddings(settings: Settings) -> Embeddings:
             return cached
 
     if backend == FASTEMBED_BACKEND:
-        embeddings = _build_fastembed(settings)
+        try:
+            embeddings = _build_fastembed(settings)
+        except EmbeddingError:
+            log.warning(
+                "fastembed is unavailable (missing onnxruntime or model). "
+                "Falling back to the dependency-free hash embedder. "
+                "Install python 3.12 or set AGENTIC_CREW_EMBEDDING_BACKEND=openai "
+                "for full semantic search."
+            )
+            embeddings = _build_hash(settings)
     elif backend == OPENAI_BACKEND:
         embeddings = _build_openai(settings)
     else:

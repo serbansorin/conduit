@@ -450,7 +450,9 @@ def _check_embeddings(settings: Settings) -> Dict[str, str]:
                 "check": "embeddings",
                 "status": "warn",
                 "detail": (
-                    f"fastembed is not usable ({exc}); install it to embed documents"
+                    f"fastembed is not installed ({exc}); using the built-in "
+                    f"hash embedder (lower quality, works on any Python). "
+                    f"Install python 3.12 and fastembed for full semantic search."
                 ),
             }
         version = getattr(fastembed, "__version__", "unknown")
