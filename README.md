@@ -698,6 +698,24 @@ desktop/      Wails desktop application
 
 ---
 
+## Agent crew
+
+`agentic-crew/` is a file-based agent crew. The orchestrator is code; every
+specialist is a YAML file in `agents/`, so adding one is a file drop rather
+than a code change. It ships with five agents for the GetUBetter platform and
+sixty-three teacher agents for the EPiC master.
+
+```bash
+cd agentic-crew
+pip install -e ../python -e ".[dev]"
+export CONDUIT_BASE_URL="http://localhost:9812"
+export CONDUIT_API_KEY="sk-..."
+agentic-crew serve
+```
+
+See [`agentic-crew/README.md`](agentic-crew/README.md) and
+[`docs/improving-coding-agents.md`](docs/improving-coding-agents.md).
+
 ## License
 
 [AGPL-3.0](LICENSE).
