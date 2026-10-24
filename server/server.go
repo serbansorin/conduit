@@ -72,6 +72,7 @@ func Run(ctx context.Context, opts Options) (*Result, error) {
 	}
 
 	bootstrapToken := ensureBootstrapToken()
+	ensureBootstrapKey()
 	loadModelRoutes()
 	loadModelMappings()
 
@@ -241,6 +242,42 @@ func ensureBootstrapToken() string {
 	fmt.Println(" Use this as the api key in opencode / clients.")
 	fmt.Println("==================================================")
 	return t.Token
+}
+
+// ensureBootstrapKey auto-adds an OpenCode Go upstream key from the GO_API_KEY
+// environment variable on first run. It is idempotent: if a key with that
+// value already exists in the "go" group, nothing happens. Manual keys added
+// through the admin panel are never touched.
+func ensureBootstrapKey() {
+	keyValue := strings.TrimSpace(config.Get().GoAPIKey)
+	if keyValue == "" {
+		return
+	}
+	keys, err := pool.AllByGroup("go")
+	if err != nil {
+		log.Printf("warn: cannot load keys: %v", err)
+		return
+	}
+	for _, k := range keys {
+		if k.Value == keyValue {
+			return // already present
+		}
+	}
+	k := &store.Key{
+		Value:   keyValue,
+		Group:   "go",
+		Label:   "bootstrap (from GO_API_KEY)",
+		Enabled: true,
+		Weight:  1,
+	}
+	if err := store.DB().Create(k).Error; err != nil {
+		log.Printf("warn: cannot create bootstrap key: %v", err)
+		return
+	}
+	fmt.Println("==================================================")
+	fmt.Println(" Bootstrap Go key added from GO_API_KEY:")
+	fmt.Printf("   %s...%s\n", keyValue[:4], keyValue[len(keyValue)-4:])
+	fmt.Println("==================================================")
 }
 
 // loadModelMappings loads persisted model rewrite rules, then overlays optional

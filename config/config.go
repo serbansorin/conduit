@@ -26,6 +26,11 @@ type Config struct {
 	// which the gateway proxies to transparently.
 	OllamaBaseURL string
 
+	// GoAPIKey is an optional OpenCode Go upstream API key supplied via
+	// environment. When set, it is auto-added to the "go" key pool on
+	// startup so the gateway works without any manual key entry.
+	GoAPIKey string
+
 	// ModelMappings is an optional JSON object that rewrites client-facing
 	// model names before forwarding, for example {"gpt-5.5":"glm-5.1"}.
 	ModelMappings string
@@ -71,6 +76,7 @@ func Load() *Config {
 			UpstreamTimeout:  envInt("UPSTREAM_TIMEOUT", 0),
 			GoBaseURL:        strings.TrimRight(envStr("GO_BASE_URL", "https://opencode.ai/zen/go"), "/"),
 			OllamaBaseURL:    strings.TrimRight(envStr("OLLAMA_BASE_URL", "https://ollama.com"), "/"),
+			GoAPIKey:         strings.TrimSpace(envStr("GO_API_KEY", "")),
 			ModelMappings:    envStr("MODEL_MAPPINGS", ""),
 			ModelMappingFile: envStr("MODEL_MAPPING_FILE", ""),
 			ModelAliases:     envStr("MODEL_ALIASES", ""),

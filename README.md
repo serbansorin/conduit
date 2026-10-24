@@ -419,6 +419,7 @@ in the working directory if one exists. See [`.env.example`](.env.example).
 | `JWT_SECRET` | — | JWT signing key. Must be ≥ 32 bytes. Startup fails on the default |
 | `DB_PATH` | `./data/conduit.db` | SQLite database file |
 | `GO_BASE_URL` | `https://opencode.ai/zen/go` | OpenCode Go upstream |
+| `GO_API_KEY` | — | OpenCode Go API key. Auto-added to the "go" key pool on startup. Optional — you can also add keys through the admin panel |
 | `OLLAMA_BASE_URL` | `https://ollama.com` | Ollama Cloud upstream |
 | `MODEL_MAPPINGS` | — | JSON map of client model → upstream model |
 | `MODEL_MAPPING_FILE` | — | Path to a JSON file with the same shape |

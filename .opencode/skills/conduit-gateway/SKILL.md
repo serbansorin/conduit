@@ -342,11 +342,14 @@ only when a bootstrap token was created.
 2. `store.Init()`.
 3. `ensureBootstrapToken()`. On an empty token table it creates one and prints
    it to stdout in a banner.
-4. `loadModelRoutes()` then `loadModelMappings()`. Mappings are loaded from
+4. `ensureBootstrapKey()`. When `GO_API_KEY` is set it is auto-added to the
+   "go" key pool (idempotent: a duplicate value is never created). Manual
+   keys added through the admin panel are never touched.
+5. `loadModelRoutes()` then `loadModelMappings()`. Mappings are loaded from
    the DB first, then the env and file rules are overlaid on top, so runtime
    config overrides the DB managed defaults.
-5. The catalog sync, then a background sync every 6 hours.
-6. `api.NewRouter(picker)`, then `admin.MountWithPicker(root.Group("/admin"),
+6. The catalog sync, then a background sync every 6 hours.
+7. `api.NewRouter(picker)`, then `admin.MountWithPicker(root.Group("/admin"),
    picker)`, then the embedded panel at `GET /admin` with a `NoRoute` fallback
    so any `/admin/...` path serves the panel.
 

@@ -320,6 +320,7 @@ turn that into 409.
 | `MODEL_FALLBACK` | empty | the route to serve for an unknown model. Empty means 404. |
 | `PASSTHROUGH_MODE` | `disabled` | `disabled` rejects unknown models with 404. `go` forwards them to the Go upstream as-is. |
 | `GO_BASE_URL` | `https://opencode.ai/zen/go` | base URL for the Go upstream. |
+| `GO_API_KEY` | — | OpenCode Go API key; auto-added to the "go" key pool on startup. |
 | `OLLAMA_BASE_URL` | `https://ollama.com` | base URL for the Ollama upstream. |
 | `GROUP_MULTIPLIERS` | empty | per group billing multiplier. JSON object or `group=1.0` list. Unset groups use 1.0. |
 
